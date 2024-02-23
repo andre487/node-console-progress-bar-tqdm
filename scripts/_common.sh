@@ -1,0 +1,3 @@
+log() {
+    echo "$@" >/dev/stderr
+}

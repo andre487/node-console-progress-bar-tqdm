@@ -1,0 +1,35 @@
+{
+  "name": "node-console-progress-bar-tqdm",
+  "version": "1.0.0",
+  "description": "",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/types.d.ts",
+  "engines": {
+    "node": ">= 16"
+  },
+  "scripts": {
+    "watch": "parcel watch",
+    "build": "parcel build",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint .",
+    "test:app": "npm run build && node ./test/app/index.js",
+    "test": "./scripts/npm-test.sh",
+    "prepare": "husky"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@parcel/packager-ts": "2.11.0",
+    "@parcel/transformer-typescript-types": "2.11.0",
+    "@typescript-eslint/eslint-plugin": "7.0.2",
+    "@typescript-eslint/parser": "7.0.2",
+    "eslint": "8.56.0",
+    "eslint-config-google": "0.14.0",
+    "husky": "9.0.11",
+    "parcel": "2.11.0",
+    "typescript": "5.3.3",
+    "typescript-eslint": "7.0.2"
+  }
+}
