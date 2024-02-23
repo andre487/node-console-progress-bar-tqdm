@@ -13,7 +13,10 @@
     "build": "parcel build",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "test:app": "npm run build && node ./test/app/index.js",
+    "test:app-src": "ts-node ./test/app/src/index.ts",
+    "test:app-dist": "npm run build && node ./test/app/dist/index.js",
+    "test:app": "npm run test:app-src && npm run test:app-dist",
+    "test:unit": "jest",
     "test": "./scripts/npm-test.sh",
     "prepare": "husky"
   },
@@ -28,7 +31,10 @@
     "eslint": "8.56.0",
     "eslint-config-google": "0.14.0",
     "husky": "9.0.11",
+    "jest": "29.7.0",
     "parcel": "2.11.0",
+    "ts-jest": "29.1.2",
+    "ts-node": "10.9.2",
     "typescript": "5.3.3",
     "typescript-eslint": "7.0.2"
   }

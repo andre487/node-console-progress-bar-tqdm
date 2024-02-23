@@ -11,6 +11,9 @@ npm run type-check || were_errors=1
 log "==> Running linters"
 npm run lint || were_errors=1
 
+log "==> Running unit tests"
+npm run test:unit || were_errors=1
+
 if [[ "$were_errors" != 0 ]]; then
     log "FAILED: There were errors in tests"
     exit 1

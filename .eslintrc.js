@@ -19,7 +19,7 @@ module.exports = {
         },
         {
             'files': [
-                'test/app/*.{js,cjs}',
+                'test/app/dist/**/*.{js,cjs}',
             ],
             'parserOptions': {
                 'sourceType': 'script',
