@@ -1,61 +1,45 @@
-export type TqdmInput<T> = Iterable<T> | Iterator<T, unknown, unknown> | number;
-export type TqdmItem<U> = U extends Iterable<infer Item> ?
-        Item :
-        U extends Iterator<infer Item> ?
-                Item :
-                null;
+import {TqdmInnerIterator, TqdmInput, TqdmItem, TqdmIteratorResult, TqdmOptions} from './base-types';
+import {hasLength, isIterable, isIterator} from './utils';
 
-export class Tqdm<T, U extends TqdmInput<T>> implements Iterator<TqdmItem<U>, undefined>, Iterable<TqdmItem<U>> {
-    private readonly _iterator: Iterator<T, unknown, unknown>;
+const defaultOptions: TqdmOptions = {
+    desc: '',
+};
 
-    constructor(private readonly _input: U) {
+export class Tqdm<T extends TqdmInput> implements Iterator<TqdmItem<T>, unknown>, Iterable<TqdmItem<T>> {
+    private readonly _iterator: TqdmInnerIterator<T>;
+    private readonly _options: TqdmOptions;
+
+    constructor(private readonly _input: T, opts: TqdmOptions = {}) {
         if (typeof this._input == 'number') {
             const x = new Array(this._input).fill(null);
             this._iterator = x[Symbol.iterator]();
         } else if (isIterable(this._input)) {
-            this._iterator = this._input[Symbol.iterator]();
+            this._iterator = this._input[Symbol.iterator]() as TqdmInnerIterator<T>;
         } else if (isIterator(this._input)) {
-            this._iterator = this._input;
+            this._iterator = this._input as TqdmInnerIterator<T>;
         } else {
             throw new Error('Unknown TQDM input type');
         }
+
+        if (opts.total === undefined && hasLength(this._input)) {
+            opts.total = this._input.length;
+        }
+
+        this._options = {
+            ...defaultOptions,
+            ...opts,
+        };
     }
 
-    [Symbol.iterator](): Iterator<TqdmItem<U>, undefined> {
+    [Symbol.iterator](): Iterator<TqdmItem<T>> {
         return this;
     }
 
-    next(): IteratorResult<TqdmItem<U>, undefined> {
-        const res = this._iterator.next();
-        if (res.done) {
-            return {value: undefined, done: true};
-        }
-        return {
-            value: res.value as TqdmItem<U>,
-            done: false,
-        };
+    next(): TqdmIteratorResult<T> {
+        return this._iterator.next();
     }
 }
 
-export function tqdm<T, U extends TqdmInput<T>>(input: U): Tqdm<T, U> {
-    return new Tqdm(input);
-}
-
-function isObject(x: unknown): x is object {
-    return x !== null && typeof x == 'object';
-}
-
-function isIterable<T>(x: unknown): x is Iterable<T> {
-    if (!isObject(x)) {
-        return false;
-    }
-    return typeof (x as Iterable<unknown>)[Symbol.iterator] == 'function';
-}
-
-
-function isIterator<T>(x: unknown): x is Iterator<T> {
-    if (!isObject(x)) {
-        return false;
-    }
-    return typeof (x as Iterator<unknown>).next == 'function';
+export function tqdm<T extends TqdmInput>(input: T, opts: TqdmOptions = {}): Tqdm<T> {
+    return new Tqdm(input, opts);
 }
