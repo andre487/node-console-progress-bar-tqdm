@@ -45,7 +45,8 @@ describe('Basic iteration', () => {
 
     test('Number', () => {
         const res = Array.from(tqdm(100));
+        const expected = new Array(100).fill(null);
 
-        expect(res).toEqual(new Array(100).fill(null));
+        expect(res).toEqual(expected);
     });
 });

@@ -1,9 +1,14 @@
 export type TqdmInput<T> = Iterable<T> | Iterator<T, unknown, unknown> | number;
+export type TqdmItem<U> = U extends Iterable<infer Item> ?
+        Item :
+        U extends Iterator<infer Item> ?
+                Item :
+                null;
 
-export class Tqdm<T> implements Iterator<T, undefined>, Iterable<T> {
+export class Tqdm<T, U extends TqdmInput<T>> implements Iterator<TqdmItem<U>, undefined>, Iterable<TqdmItem<U>> {
     private readonly _iterator: Iterator<T, unknown, unknown>;
 
-    constructor(private readonly _input: TqdmInput<T>) {
+    constructor(private readonly _input: U) {
         if (typeof this._input == 'number') {
             const x = new Array(this._input).fill(null);
             this._iterator = x[Symbol.iterator]();
@@ -16,20 +21,23 @@ export class Tqdm<T> implements Iterator<T, undefined>, Iterable<T> {
         }
     }
 
-    [Symbol.iterator](): Iterator<T, undefined> {
+    [Symbol.iterator](): Iterator<TqdmItem<U>, undefined> {
         return this;
     }
 
-    next(): IteratorResult<T, undefined> {
+    next(): IteratorResult<TqdmItem<U>, undefined> {
         const res = this._iterator.next();
         if (res.done) {
             return {value: undefined, done: true};
         }
-        return res;
+        return {
+            value: res.value as TqdmItem<U>,
+            done: false,
+        };
     }
 }
 
-export function tqdm<T>(input: TqdmInput<T>): Tqdm<T> {
+export function tqdm<T, U extends TqdmInput<T>>(input: U): Tqdm<T, U> {
     return new Tqdm(input);
 }
 
