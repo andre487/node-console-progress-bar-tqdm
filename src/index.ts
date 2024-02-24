@@ -1,7 +1,25 @@
-import {TqdmInnerIterator, TqdmInput, TqdmItem, TqdmIteratorResult, TqdmOptions, UnitTableType} from './base-types';
-import {NumericIterator, TqdmWriteStream} from './supply';
+import {
+    IAsyncIteratorContainer,
+    ISyncIteratorContainer,
+    ITqdmProgress,
+    TqdmInnerIterator,
+    TqdmInput,
+    TqdmItem,
+    TqdmOptions,
+    UnitTableType,
+} from './base-types';
+import {AsyncResultIterator, NumericIterator, SyncResultIterator, TqdmWriteStream} from './supply';
 import {getTermColor, getTermColorReset} from './term';
-import {formatTimeDelta, handleUnit, hasLength, isIterable, isIterator, pluralService, scaleUnit} from './utils';
+import {
+    formatTimeDelta,
+    handleUnit,
+    hasLength,
+    isAsyncIterable,
+    isIterable,
+    isIterator,
+    pluralService,
+    scaleUnit,
+} from './utils';
 
 const defaultOptions: Required<TqdmOptions> = {
     description: '',
@@ -18,7 +36,86 @@ const defaultOptions: Required<TqdmOptions> = {
     forceTerminal: false,
 };
 
-export class TqdmProgress {
+export function tqdm<T extends TqdmInput>(input: T, opts: TqdmOptions = {}): Tqdm<T> {
+    return new Tqdm(input, opts);
+}
+
+export class Tqdm<TInput extends TqdmInput> implements Iterable<TqdmItem<TInput>>,
+    AsyncIterable<TqdmItem<TInput>>,
+    ISyncIteratorContainer<TqdmItem<TInput>>,
+    IAsyncIteratorContainer<TqdmItem<TInput>> {
+    private readonly iterator: TqdmInnerIterator<TInput>;
+    private readonly progress: ITqdmProgress;
+
+    constructor(private readonly _input: TInput, options: TqdmOptions = {}) {
+        if (typeof this._input == 'number') {
+            this.iterator = new NumericIterator(this._input) as TqdmInnerIterator<TInput>;
+        } else if (isIterable(this._input)) {
+            this.iterator = this._input[Symbol.iterator]() as TqdmInnerIterator<TInput>;
+        } else if (isAsyncIterable(this._input)) {
+            this.iterator = this._input[Symbol.asyncIterator]() as TqdmInnerIterator<TInput>;
+        } else if (isIterator(this._input)) {
+            this.iterator = this._input as TqdmInnerIterator<TInput>;
+        } else {
+            throw new Error('Unknown TQDM input type');
+        }
+
+        if (options.total === undefined || options.total < 0) {
+            if (hasLength(this._input)) {
+                options.total = this._input.length;
+            } else if (typeof this._input == 'number') {
+                options.total = this._input;
+            }
+        }
+        this.progress = new TqdmProgress(options);
+        this.progress.render();
+    }
+
+    [Symbol.iterator](): SyncResultIterator<TqdmItem<TInput>> {
+        return new SyncResultIterator(this);
+    }
+
+    [Symbol.asyncIterator](): AsyncResultIterator<TqdmItem<TInput>> {
+        return new AsyncResultIterator(this);
+    }
+
+    nextSync(): IteratorResult<TqdmItem<TInput>> {
+        const res = this.iterator.next();
+        if (res instanceof Promise) {
+            throw new Error('Async value in sync iterator');
+        }
+
+        if (res.done) {
+            this.progress.render(true);
+            this.progress.close();
+        } else {
+            this.progress.update();
+        }
+
+        return res;
+    }
+
+    nextAsync(): Promise<IteratorResult<TqdmItem<TInput>>> {
+        const pRes = this.iterator.next();
+        if (!(pRes instanceof Promise)) {
+            throw new Error('Sync value in async iterator');
+        }
+
+        return new Promise((resolve, reject) => {
+            pRes.then((res) => {
+                if (res.done) {
+                    this.progress.render(true);
+                    this.progress.close();
+                } else {
+                    this.progress.update();
+                }
+                resolve(res);
+            }).catch(reject);
+        });
+    }
+}
+
+export class TqdmProgress implements ITqdmProgress {
     private readonly description: string;
     private readonly unit: UnitTableType;
     private readonly maxColWidth: number;
@@ -190,50 +287,4 @@ export class TqdmProgress {
             this.progressRightBrace,
         ].join('');
     }
-}
-
-export class Tqdm<T extends TqdmInput> implements Iterator<TqdmItem<T>, unknown>, Iterable<TqdmItem<T>> {
-    private readonly iterator: TqdmInnerIterator<T>;
-    private readonly progress: TqdmProgress;
-
-    constructor(private readonly _input: T, options: TqdmOptions = {}) {
-        if (typeof this._input == 'number') {
-            this.iterator = new NumericIterator(this._input) as TqdmInnerIterator<T>;
-        } else if (isIterable(this._input)) {
-            this.iterator = this._input[Symbol.iterator]() as TqdmInnerIterator<T>;
-        } else if (isIterator(this._input)) {
-            this.iterator = this._input as TqdmInnerIterator<T>;
-        } else {
-            throw new Error('Unknown TQDM input type');
-        }
-
-        if (options.total === undefined || options.total < 0) {
-            if (hasLength(this._input)) {
-                options.total = this._input.length;
-            } else if (typeof this._input == 'number') {
-                options.total = this._input;
-            }
-        }
-        this.progress = new TqdmProgress(options);
-        this.progress.render();
-    }
-
-    [Symbol.iterator](): Tqdm<T> {
-        return this;
-    }
-
-    next(): TqdmIteratorResult<T> {
-        const res = this.iterator.next();
-        if (res.done) {
-            this.progress.render(true);
-            this.progress.close();
-        } else {
-            this.progress.update();
-        }
-        return res;
-    }
-}
-
-export function tqdm<T extends TqdmInput>(input: T, opts: TqdmOptions = {}): Tqdm<T> {
-    return new Tqdm(input, opts);
 }

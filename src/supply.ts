@@ -1,11 +1,12 @@
 import {EOL} from 'node:os';
 import tty from 'node:tty';
+import {IAsyncIteratorContainer, ISyncIteratorContainer} from './base-types';
 import {getTermClearScreen, getTermReturnToLineStart} from './term';
 import {hasFd} from './utils';
 
 const defaultTerminalColumns = 80;
 
-export class NumericIterator implements Iterator<number, undefined> {
+export class NumericIterator implements Iterator<number> {
     private cnt = 0;
 
     constructor(private readonly num: number) {}
@@ -16,6 +17,22 @@ export class NumericIterator implements Iterator<number, undefined> {
             return {value: undefined, done: true};
         }
         return {value: val, done: false};
+    }
+}
+
+export class SyncResultIterator<TItem> implements Iterator<TItem> {
+    constructor(private readonly container: ISyncIteratorContainer<TItem>) {}
+
+    next(): IteratorResult<TItem> {
+        return this.container.nextSync();
+    }
+}
+
+export class AsyncResultIterator<TItem> implements AsyncIterator<TItem> {
+    constructor(private readonly container: IAsyncIteratorContainer<TItem>) {}
+
+    next(): Promise<IteratorResult<TItem>> {
+        return this.container.nextAsync();
     }
 }
 

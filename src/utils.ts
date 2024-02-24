@@ -28,6 +28,13 @@ export function isIterable<T>(x: unknown): x is Iterable<T> {
     return typeof (x as Iterable<unknown>)[Symbol.iterator] == 'function';
 }
 
+export function isAsyncIterable<T>(x: unknown): x is AsyncIterable<T> {
+    if (!isObject(x)) {
+        return false;
+    }
+    return typeof (x as AsyncIterable<unknown>)[Symbol.asyncIterator] == 'function';
+}
+
 export function isIterator<T>(x: unknown): x is Iterator<T> {
     if (!isObject(x)) {
         return false;

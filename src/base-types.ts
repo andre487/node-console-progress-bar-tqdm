@@ -1,17 +1,27 @@
-export type TqdmInput = Iterable<unknown> | Iterator<unknown, unknown, unknown> | number;
-export type TqdmItem<T> = T extends Iterable<infer Item> ?
-    Item :
-    T extends Iterator<infer Item> ?
-        Item :
-        null;
+export type TqdmInput = Iterable<unknown> |
+    Iterator<unknown> |
+    AsyncIterable<unknown> |
+    AsyncIterator<unknown> |
+    number;
 
-export type TqdmInnerIterator<T> = Iterator<TqdmItem<T>, unknown, unknown>;
-export type TqdmIteratorResult<T> = IteratorResult<TqdmItem<T>, unknown>;
+export type TqdmItem<TInput> = TInput extends Iterable<infer Item> ?
+    Item :
+    TInput extends Iterator<infer Item> ?
+        Item :
+        TInput extends AsyncIterable<infer Item> ?
+            Item :
+            TInput extends AsyncIterator<infer Item> ?
+                Item :
+                TInput extends number ?
+                    number :
+                    never;
+
+export type TqdmInnerIterator<TInput> = Iterator<TqdmItem<TInput>> | AsyncIterator<TqdmItem<TInput>>;
 
 export type UnitTableType = Record<Intl.LDMLPluralRule, string>;
 export type RawUnitType = string | [string, string] | UnitTableType;
 
-export interface TqdmOptions {
+export type TqdmOptions = {
     // Description, the prefix for the progress bar.
     description?: string;
 
@@ -68,7 +78,7 @@ export interface TqdmOptions {
 
     // Stream to write the progress bar.
     // Default: `process.stderr`.
-    stream?: NodeJS.WritableStream;
+    stream?: NodeJS.WritableStream,
 
     // Minimum progress display update interval in milliseconds.
     // Default: 50ms.
@@ -77,4 +87,20 @@ export interface TqdmOptions {
     // Force output like the stream is a terminal.
     // Try to emulate the terminal behavior.
     forceTerminal?: boolean;
+};
+
+export interface ITqdmProgress {
+    update(by?: number): void;
+
+    render(force?: boolean): void;
+
+    close(): void;
+}
+
+export interface ISyncIteratorContainer<TItem> {
+    nextSync(): IteratorResult<TItem>;
+}
+
+export interface IAsyncIteratorContainer<TItem> {
+    nextAsync(): Promise<IteratorResult<TItem>>;
 }

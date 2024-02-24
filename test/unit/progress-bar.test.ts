@@ -49,6 +49,28 @@ describe('TqdmProgress', () => {
         expect(getCleanData(stream)[3]).toMatch(/\D\dits\s/);
     });
 
+    test('Async generator', async () => {
+        const arr = new Array(10).fill(null).map((_, idx) => idx);
+
+        async function* gen() {
+            for (const item of arr) {
+                yield item;
+            }
+        }
+
+        const t = tqdm(gen(), {
+            stream,
+            unit: ['it', 'its'],
+            ...commonOptions,
+        });
+        for await (const _ of t) {
+            await sleep();
+        }
+
+        checkUncountableProgress(stream);
+        expect(getCleanData(stream)[3]).toMatch(/\D\dits\s/);
+    });
+
     test('Generator with total', async () => {
         const arr = new Array(10).fill(null).map((_, idx) => idx);
 
