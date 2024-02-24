@@ -1,3 +1,4 @@
+import {EOL} from 'node:os';
 import tty from 'node:tty';
 import {RawUnitType, UnitTableType} from './base-types';
 
@@ -158,11 +159,11 @@ export class TqdmWriteStream {
 
     finalize() {
         process.off('SIGWINCH', this.onTerminalResize);
-        this.stream.write('\n');
+        this.stream.write(EOL);
     }
 
     private onTerminalResize = () => {
-        this.stream.write('\n');
+        this.stream.write(EOL);
         process.once('SIGWINCH', this.onTerminalResize);
     };
 
@@ -193,6 +194,6 @@ export class TqdmWriteStream {
     };
 
     private generalResetLine = () => {
-        this.stream.write('\n');
+        this.stream.write(EOL);
     };
 }

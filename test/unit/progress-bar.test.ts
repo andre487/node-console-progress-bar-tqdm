@@ -1,4 +1,5 @@
 import {beforeEach, describe, expect, test} from '@jest/globals';
+import {EOL} from 'node:os';
 import {Writable} from 'node:stream';
 import * as timers from 'node:timers/promises';
 import {tqdm} from '../../src';
@@ -175,7 +176,7 @@ function checkCountableProgress(stream: TestStream) {
     }
     expect(hasTimers).toBeTruthy();
 
-    expect(cleanData[11]).toBe('\n');
+    expect(cleanData[11]).toBe(EOL);
 }
 
 function checkUncountableProgress(stream: TestStream) {
@@ -198,7 +199,7 @@ function checkUncountableProgress(stream: TestStream) {
     }
     expect(hasTimers).toBeTruthy();
 
-    expect(cleanData[11]).toBe('\n');
+    expect(cleanData[11]).toBe(EOL);
 }
 
 
