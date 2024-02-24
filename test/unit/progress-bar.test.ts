@@ -14,7 +14,7 @@ describe('TqdmProgress', () => {
         const input = new Array(10).fill(null).map((_, idx) => idx);
 
         for (const _ of tqdm(input, {stream, forceTerminal: true})) {
-            await timers.setTimeout(1);
+            await sleep();
         }
 
         checkCountableProgress(stream);
@@ -35,7 +35,7 @@ describe('TqdmProgress', () => {
             forceTerminal: true,
         });
         for (const _ of t) {
-            await timers.setTimeout(1);
+            await sleep();
         }
 
         checkUncountableProgress(stream);
@@ -52,7 +52,7 @@ describe('TqdmProgress', () => {
         }
 
         for (const _ of tqdm(gen(), {stream, forceTerminal: true, total: 10})) {
-            await timers.setTimeout(1);
+            await sleep();
         }
 
         checkCountableProgress(stream);
@@ -60,7 +60,7 @@ describe('TqdmProgress', () => {
 
     test('Number', async () => {
         for (const _ of tqdm(10, {stream, forceTerminal: true})) {
-            await timers.setTimeout(1);
+            await sleep();
         }
         checkCountableProgress(stream);
     });
@@ -77,7 +77,7 @@ describe('TqdmProgress', () => {
             progressBraces: ['B', 'E'],
         });
         for (const _ of t) {
-            await timers.setTimeout(1);
+            await sleep();
         }
 
         let hasTimers = false;
@@ -111,7 +111,7 @@ describe('TqdmProgress', () => {
         });
 
         for (const _ of t) {
-            await timers.setTimeout(1);
+            await sleep();
         }
 
         let hasTimers = false;
@@ -204,4 +204,8 @@ function checkUncountableProgress(stream: TestStream) {
 
 function getCleanData(stream: TestStream): string[] {
     return stream.data.filter((x) => x !== '\x1B[0G\x1B[K');
+}
+
+async function sleep(time = 5) {
+    await timers.setTimeout(time);
 }
