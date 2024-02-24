@@ -1,5 +1,5 @@
 import {describe, expect, test} from '@jest/globals';
-import {UnitTableType} from '../../src/base-types';
+import {TqdmUnitTableType} from '../../src/base-types';
 import {handleUnit, scaleUnit} from '../../src/utils';
 import * as utils from '../../src/utils';
 
@@ -117,7 +117,7 @@ describe('#handleUnit()', () => {
             'one': '1 it',
             'two': '2 its',
             'many': '4 its',
-        } as UnitTableType);
+        } as TqdmUnitTableType);
 
         expect(res).toEqual({
             'zero': '4 its',

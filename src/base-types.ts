@@ -16,10 +16,8 @@ export type TqdmItem<TInput> = TInput extends Iterable<infer Item> ?
                     number :
                     never;
 
-export type TqdmInnerIterator<TInput> = Iterator<TqdmItem<TInput>> | AsyncIterator<TqdmItem<TInput>>;
-
-export type UnitTableType = Record<Intl.LDMLPluralRule, string>;
-export type RawUnitType = string | [string, string] | UnitTableType;
+export type TqdmUnitTableType = Record<Intl.LDMLPluralRule, string>;
+export type TqdmRawUnitType = string | [string, string] | TqdmUnitTableType;
 
 export type TqdmOptions = {
     // Description, the prefix for the progress bar.
@@ -67,7 +65,7 @@ export type TqdmOptions = {
     //   "other": "some things"
     // }
     // Default: "it".
-    unit?: RawUnitType;
+    unit?: TqdmRawUnitType;
 
     // If true, the number of iterations will be reduced/scaled
     // automatically and a metric prefix following the
@@ -97,10 +95,10 @@ export interface ITqdmProgress {
     close(): void;
 }
 
-export interface ISyncIteratorContainer<TItem> {
+export interface ITqdmSyncIteratorContainer<TItem> {
     nextSync(): IteratorResult<TItem>;
 }
 
-export interface IAsyncIteratorContainer<TItem> {
+export interface ITqdmAsyncIteratorContainer<TItem> {
     nextAsync(): Promise<IteratorResult<TItem>>;
 }

@@ -1,14 +1,19 @@
 import {
-    IAsyncIteratorContainer,
-    ISyncIteratorContainer,
+    ITqdmAsyncIteratorContainer,
+    ITqdmSyncIteratorContainer,
     ITqdmProgress,
-    TqdmInnerIterator,
     TqdmInput,
     TqdmItem,
     TqdmOptions,
-    UnitTableType,
+    TqdmUnitTableType,
 } from './base-types';
-import {AsyncResultIterator, NumericIterator, SyncResultIterator, TqdmWriteStream} from './supply';
+import {
+    TqdmAsyncResultIterator, TqdmAsyncResultIteratorReturn,
+    TqdmNumericIterator,
+    TqdmSyncResultIterator,
+    TqdmSyncResultIteratorReturn, TqdmInnerIterator, TqdmIteratorResultAsync, TqdmIteratorResultSync,
+    TqdmWriteStream,
+} from './supply';
 import {getTermColor, getTermColorReset} from './term';
 import {
     formatTimeDelta,
@@ -42,20 +47,20 @@ export function tqdm<T extends TqdmInput>(input: T, opts: TqdmOptions = {}): Tqd
 
 export class Tqdm<TInput extends TqdmInput> implements Iterable<TqdmItem<TInput>>,
     AsyncIterable<TqdmItem<TInput>>,
-    ISyncIteratorContainer<TqdmItem<TInput>>,
-    IAsyncIteratorContainer<TqdmItem<TInput>> {
-    private readonly iterator: TqdmInnerIterator<TInput>;
+    ITqdmSyncIteratorContainer<TqdmItem<TInput>>,
+    ITqdmAsyncIteratorContainer<TqdmItem<TInput>> {
+    private readonly iterator: TqdmInnerIterator<TqdmItem<TInput>>;
     private readonly progress: ITqdmProgress;
 
     constructor(private readonly _input: TInput, options: TqdmOptions = {}) {
         if (typeof this._input == 'number') {
-            this.iterator = new NumericIterator(this._input) as TqdmInnerIterator<TInput>;
+            this.iterator = new TqdmNumericIterator(this._input) as TqdmInnerIterator<TqdmItem<TInput>>;
         } else if (isIterable(this._input)) {
-            this.iterator = this._input[Symbol.iterator]() as TqdmInnerIterator<TInput>;
+            this.iterator = this._input[Symbol.iterator]() as TqdmInnerIterator<TqdmItem<TInput>>;
         } else if (isAsyncIterable(this._input)) {
-            this.iterator = this._input[Symbol.asyncIterator]() as TqdmInnerIterator<TInput>;
+            this.iterator = this._input[Symbol.asyncIterator]() as TqdmInnerIterator<TqdmItem<TInput>>;
         } else if (isIterator(this._input)) {
-            this.iterator = this._input as TqdmInnerIterator<TInput>;
+            this.iterator = this._input as TqdmInnerIterator<TqdmItem<TInput>>;
         } else {
             throw new Error('Unknown TQDM input type');
         }
@@ -71,15 +76,15 @@ export class Tqdm<TInput extends TqdmInput> implements Iterable<TqdmItem<TInput>
         this.progress.render();
     }
 
-    [Symbol.iterator](): SyncResultIterator<TqdmItem<TInput>> {
-        return new SyncResultIterator(this);
+    [Symbol.iterator](): TqdmSyncResultIteratorReturn<TInput> {
+        return new TqdmSyncResultIterator(this) as TqdmSyncResultIteratorReturn<TInput>;
     }
 
-    [Symbol.asyncIterator](): AsyncResultIterator<TqdmItem<TInput>> {
-        return new AsyncResultIterator(this);
+    [Symbol.asyncIterator](): TqdmAsyncResultIteratorReturn<TInput> {
+        return new TqdmAsyncResultIterator(this) as TqdmAsyncResultIteratorReturn<TInput>;
     }
 
-    nextSync(): IteratorResult<TqdmItem<TInput>> {
+    nextSync(): TqdmIteratorResultSync<TInput> {
         const res = this.iterator.next();
         if (res instanceof Promise) {
             throw new Error('Async value in sync iterator');
@@ -92,10 +97,10 @@ export class Tqdm<TInput extends TqdmInput> implements Iterable<TqdmItem<TInput>
             this.progress.update();
         }
 
-        return res;
+        return res as TqdmIteratorResultSync<TInput>;
     }
 
-    nextAsync(): Promise<IteratorResult<TqdmItem<TInput>>> {
+    nextAsync(): TqdmIteratorResultAsync<TInput> {
         const pRes = this.iterator.next();
         if (!(pRes instanceof Promise)) {
             throw new Error('Sync value in async iterator');
@@ -111,13 +116,13 @@ export class Tqdm<TInput extends TqdmInput> implements Iterable<TqdmItem<TInput>
                 }
                 resolve(res);
             }).catch(reject);
-        });
+        }) as TqdmIteratorResultAsync<TInput>;
     }
 }
 
 export class TqdmProgress implements ITqdmProgress {
     private readonly description: string;
-    private readonly unit: UnitTableType;
+    private readonly unit: TqdmUnitTableType;
     private readonly maxColWidth: number;
     private readonly progressLeftBrace: string;
     private readonly progressRightBrace: string;

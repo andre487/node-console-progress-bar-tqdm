@@ -1,4 +1,4 @@
-import {RawUnitType, UnitTableType} from './base-types';
+import {TqdmRawUnitType, TqdmUnitTableType} from './base-types';
 
 interface LengthHolder<T = unknown> {
     length: T;
@@ -106,8 +106,8 @@ export function formatTimeDelta(time: number, showFractions = false): string {
     return res;
 }
 
-export function handleUnit(unit: RawUnitType): UnitTableType {
-    const res = {} as UnitTableType;
+export function handleUnit(unit: TqdmRawUnitType): TqdmUnitTableType {
+    const res = {} as TqdmUnitTableType;
     if (typeof unit == 'string') {
         for (const unitKey of pluralKeys) {
             res[unitKey] = unit;

@@ -4,7 +4,7 @@ import {Tqdm, tqdm} from '../../../src';
 async function main() {
     const data = new Array(100).fill(0).map((_, idx) => idx);
 
-    function* gen() {
+    async function* gen() {
         for (const item of data) {
             yield item;
         }
@@ -50,7 +50,7 @@ async function main() {
         await someWork();
     }
 
-    for (const _ of tqdm(gen(), {description: 'GEN', unit: ['thing', 'things']})) {
+    for await (const _ of tqdm(gen(), {description: 'GEN', unit: ['thing', 'things']})) {
         await someWork();
     }
 }

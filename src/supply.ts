@@ -1,12 +1,28 @@
 import {EOL} from 'node:os';
 import tty from 'node:tty';
-import {IAsyncIteratorContainer, ISyncIteratorContainer} from './base-types';
+import {ITqdmAsyncIteratorContainer, ITqdmSyncIteratorContainer, TqdmItem} from './base-types';
 import {getTermClearScreen, getTermReturnToLineStart} from './term';
 import {hasFd} from './utils';
 
 const defaultTerminalColumns = 80;
 
-export class NumericIterator implements Iterator<number> {
+export type TqdmInnerIterator<TItem> = Iterator<TItem> | AsyncIterator<TItem>;
+
+export type TqdmIteratorResultSync<TInput> = TInput extends Iterable<unknown> ?
+    IteratorResult<TqdmItem<TInput>> :
+    TInput extends Iterator<unknown> ?
+        IteratorResult<TqdmItem<TInput>> :
+        TInput extends number ?
+            IteratorResult<TqdmItem<TInput>> :
+            never;
+
+export type TqdmIteratorResultAsync<TInput> = TInput extends AsyncIterable<unknown> ?
+    Promise<IteratorResult<TqdmItem<TInput>>> :
+    TInput extends AsyncIterator<unknown> ?
+        Promise<IteratorResult<TqdmItem<TInput>>> :
+        never;
+
+export class TqdmNumericIterator implements Iterator<number> {
     private cnt = 0;
 
     constructor(private readonly num: number) {}
@@ -20,21 +36,35 @@ export class NumericIterator implements Iterator<number> {
     }
 }
 
-export class SyncResultIterator<TItem> implements Iterator<TItem> {
-    constructor(private readonly container: ISyncIteratorContainer<TItem>) {}
+export class TqdmSyncResultIterator<TItem> implements Iterator<TItem> {
+    constructor(private readonly container: ITqdmSyncIteratorContainer<TItem>) {}
 
     next(): IteratorResult<TItem> {
         return this.container.nextSync();
     }
 }
 
-export class AsyncResultIterator<TItem> implements AsyncIterator<TItem> {
-    constructor(private readonly container: IAsyncIteratorContainer<TItem>) {}
+export type TqdmSyncResultIteratorReturn<TInput> = TInput extends Iterable<unknown> ?
+    TqdmSyncResultIterator<TqdmItem<TInput>> :
+    TInput extends Iterator<unknown> ?
+        TqdmSyncResultIterator<TqdmItem<TInput>> :
+        TInput extends number ?
+            TqdmSyncResultIterator<TqdmItem<TInput>> :
+            never;
+
+export class TqdmAsyncResultIterator<TItem> implements AsyncIterator<TItem> {
+    constructor(private readonly container: ITqdmAsyncIteratorContainer<TItem>) {}
 
     next(): Promise<IteratorResult<TItem>> {
         return this.container.nextAsync();
     }
 }
+
+export type TqdmAsyncResultIteratorReturn<TInput> = TInput extends AsyncIterable<unknown> ?
+    TqdmAsyncResultIterator<TqdmItem<TInput>> :
+    TInput extends AsyncIterator<unknown> ?
+        TqdmAsyncResultIterator<TqdmItem<TInput>> :
+        never;
 
 export class TqdmWriteStream {
     readonly resetLine: () => void;
