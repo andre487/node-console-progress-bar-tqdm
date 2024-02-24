@@ -10,8 +10,14 @@ async function main() {
         }
     }
 
-    async function someWork() {
-        await timers.setTimeout(50);
+    async function someWork(time = 50) {
+        await timers.setTimeout(time);
+    }
+
+    if (process.env.ENABLE_BIG == '1') {
+        for (const _ of tqdm(123_431_123_000, {desc: 'BIG', progressSymbol: '=', unitScale: true})) {
+            await someWork(0);
+        }
     }
 
     for (const _ of tqdm(data, {desc: 'ARR', progressSymbol: '=', initial: 30})) {

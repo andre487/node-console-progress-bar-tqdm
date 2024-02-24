@@ -50,6 +50,13 @@ export interface TqdmOptions {
     // Default: "it".
     unit?: RawUnitType;
 
+    // If true, the number of iterations will be reduced/scaled
+    // automatically and a metric prefix following the
+    // International System of Units standard will be added
+    // (kilo, mega, etc.).
+    // Default: false.
+    unitScale?: boolean;
+
     // Stream to write the progress bar.
     // Default: `process.stderr`.
     stream?: NodeJS.WritableStream;

@@ -128,6 +128,34 @@ export function handleUnit(unit: RawUnitType): UnitTableType {
     return res;
 }
 
+export function scaleUnit(x: number): string {
+    const sign = Math.sign(x);
+    const val = Math.abs(x);
+
+    if (val < 1000) {
+        return x.toString();
+    }
+
+    const digits = Math.trunc(Math.log10(val)) + 1;
+    if (digits >= 3 && digits <= 6) {
+        const res = sign * Math.round(val * 100 / 1e3) / 100;
+        return `${res.toFixed(2)}k`;
+    }
+
+    if (digits > 6 && digits <= 9) {
+        const res = sign * Math.round(val * 100 / 1e6) / 100;
+        return `${res.toFixed(2)}M`;
+    }
+
+    if (digits > 9 && digits <= 12) {
+        const res = sign * Math.round(val * 100 / 1e9) / 100;
+        return `${res.toFixed(2)}G`;
+    }
+
+    const res = sign * Math.round(val * 100 / 1e12) / 100;
+    return `${res.toFixed(2)}T`;
+}
+
 export class TqdmWriteStream {
     readonly resetLine: () => void;
 

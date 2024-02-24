@@ -1,5 +1,15 @@
 import {TqdmInnerIterator, TqdmInput, TqdmItem, TqdmIteratorResult, TqdmOptions, UnitTableType} from './base-types';
-import {formatTimeDelta, handleUnit, hasLength, isIterable, isIterator, pluralService, TqdmWriteStream} from './utils';
+import {NumericIterator} from './supply';
+import {
+    formatTimeDelta,
+    handleUnit,
+    hasLength,
+    isIterable,
+    isIterator,
+    pluralService,
+    scaleUnit,
+    TqdmWriteStream,
+} from './utils';
 
 const defaultOptions: Required<TqdmOptions> = {
     desc: '',
@@ -7,6 +17,7 @@ const defaultOptions: Required<TqdmOptions> = {
     progressBraces: ['|', '|'],
     progressSymbol: '█',
     unit: 'it',
+    unitScale: false,
     initial: 0,
     total: -1,
     stream: process.stderr,
@@ -26,12 +37,17 @@ export class TqdmProgress {
 
     private readonly total: number;
     private readonly totalDigits: number = 0;
+    private readonly unitScale: boolean;
+    private readonly unitDelimiter: string = '';
+    private readonly totalScaled: string = '';
     private readonly haveCorrectTotal: boolean;
 
     private readonly startTime: number = Date.now();
     private lastRenderTime: number = 0;
     private timeSpent: number = 0;
     private counter: number;
+
+    private readonly num: (x: number) => string;
 
     constructor(options: TqdmOptions) {
         const fullOptions = {
@@ -52,6 +68,17 @@ export class TqdmProgress {
         this.haveCorrectTotal = isFinite(this.total) && !isNaN(this.total) && this.total > 0;
         if (this.haveCorrectTotal) {
             this.totalDigits = Math.trunc(Math.log10(this.total)) + 1;
+        }
+
+        this.unitScale = fullOptions.unitScale;
+        if (fullOptions.unitScale) {
+            this.num = this.numScale;
+            this.unitDelimiter = ' ';
+            if (this.haveCorrectTotal) {
+                this.totalScaled = scaleUnit(this.total);
+            }
+        } else {
+            this.num = this.numNoScale;
         }
     }
 
@@ -79,6 +106,14 @@ export class TqdmProgress {
         this.stream.finalize();
     }
 
+    private numScale(x: number) {
+        return scaleUnit(x);
+    }
+
+    private numNoScale(x: number) {
+        return x.toString();
+    }
+
     private doesCounterFitTotal() {
         return this.haveCorrectTotal && this.counter <= this.total;
     }
@@ -90,7 +125,7 @@ export class TqdmProgress {
             countStr = percent == -1 ? '' : `${String(percent).padStart(3, ' ')}% `;
         } else {
             const unitKey = pluralService.select(this.counter);
-            countStr = `${this.counter}${this.unit[unitKey]}`;
+            countStr = `${this.num(this.counter)}${this.unitDelimiter}${this.unit[unitKey]}`;
         }
 
         const descStr = this.desc ? `${this.desc}: ` : '';
@@ -100,8 +135,12 @@ export class TqdmProgress {
     private generateRight() {
         const res: string[] = [''];
         if (this.doesCounterFitTotal()) {
-            const countStr = String(this.counter).padStart(this.totalDigits, ' ');
-            res.push(`${countStr}/${this.total}`);
+            if (this.unitScale) {
+                res.push(`${this.num(this.counter)}/${this.totalScaled}`);
+            } else {
+                const countStr = String(this.counter).padStart(this.totalDigits, ' ');
+                res.push(`${countStr}/${this.total}`);
+            }
         }
 
         if (this.timeSpent) {
@@ -154,8 +193,7 @@ export class Tqdm<T extends TqdmInput> implements Iterator<TqdmItem<T>, unknown>
 
     constructor(private readonly _input: T, options: TqdmOptions = {}) {
         if (typeof this._input == 'number') {
-            const x = new Array(this._input).fill(null);
-            this.iterator = x[Symbol.iterator]();
+            this.iterator = new NumericIterator(this._input) as TqdmInnerIterator<T>;
         } else if (isIterable(this._input)) {
             this.iterator = this._input[Symbol.iterator]() as TqdmInnerIterator<T>;
         } else if (isIterator(this._input)) {

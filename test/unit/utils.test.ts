@@ -1,6 +1,6 @@
 import {describe, expect, test} from '@jest/globals';
 import {UnitTableType} from '../../src/base-types';
-import {handleUnit} from '../../src/utils';
+import {handleUnit, scaleUnit} from '../../src/utils';
 import * as utils from '../../src/utils';
 
 describe('#formatTimeDelta()', () => {
@@ -127,5 +127,29 @@ describe('#handleUnit()', () => {
             'many': '4 its',
             'other': '4 its',
         });
+    });
+});
+
+describe('#scaleUnit', () => {
+    test('Positive', () => {
+        expect(scaleUnit(999.12)).toBe('999.12');
+        expect(scaleUnit(1_499.12)).toBe('1.50k');
+        expect(scaleUnit(999_499.12)).toBe('999.50k');
+        expect(scaleUnit(1_111_111.12)).toBe('1.11M');
+        expect(scaleUnit(1_121_111_000.12)).toBe('1.12G');
+        expect(scaleUnit(123_431_123_000.12)).toBe('123.43G');
+        expect(scaleUnit(1_121_111_000_999.12)).toBe('1.12T');
+        // eslint-disable-next-line @typescript-eslint/no-loss-of-precision
+        expect(scaleUnit(1_121_111_000_999_000.12)).toBe('1121.11T');
+    });
+
+    test('Negative', () => {
+        expect(scaleUnit(-999.12)).toBe('-999.12');
+        expect(scaleUnit(-1_499.12)).toBe('-1.50k');
+        expect(scaleUnit(-1_111_111.12)).toBe('-1.11M');
+        expect(scaleUnit(-1_121_111_000.12)).toBe('-1.12G');
+        expect(scaleUnit(-1_121_111_000_999.12)).toBe('-1.12T');
+        // eslint-disable-next-line @typescript-eslint/no-loss-of-precision
+        expect(scaleUnit(-1_121_111_000_999_000.12)).toBe('-1121.11T');
     });
 });

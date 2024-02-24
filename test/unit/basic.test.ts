@@ -52,7 +52,7 @@ describe('Basic iteration', () => {
 
     test('Number', () => {
         const res = Array.from(tqdm(100, {stream}));
-        const expected = new Array(100).fill(null);
+        const expected = new Array(100).fill(null).map((_, idx) => idx);
 
         expect(res).toEqual(expected);
     });

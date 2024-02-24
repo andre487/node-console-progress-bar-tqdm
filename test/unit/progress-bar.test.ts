@@ -71,7 +71,7 @@ describe('TqdmProgress', () => {
         checkCountableProgress(stream);
     });
 
-    test('Array with options', async () => {
+    test('Array with custom progress bar', async () => {
         const input = new Array(10).fill(null).map((_, idx) => idx);
 
         const t = tqdm(input, {
@@ -145,6 +145,29 @@ describe('TqdmProgress', () => {
         for (const line of cleanData.slice(3, 11)) {
             expect(line).toMatch(/^\s+\d+its?\s+\[\d{2}:\d{2}.\d{3}, \d+.\d{3}s\/it]/);
         }
+    });
+
+    test('Array with unit scaling', async () => {
+        const t = tqdm(1_000, {
+            stream,
+            unitScale: true,
+            progressSymbol: '=',
+            ...commonOptions,
+        });
+
+        for (const _ of t) {
+            await sleep(0);
+        }
+
+        expect(stream.data).toHaveLength(2003);
+        const cleanData = getCleanData(stream);
+        expect(cleanData).toHaveLength(1002);
+
+        expect(cleanData[0]).toBe('   0% |                                                               | 0/1.00k ');
+        for (const line of cleanData.slice(1, 1000)) {
+            expect(line).toMatch(/^\s+\d+%\s*\|=*\s*\|\s+\d+\/[\d.]+k/);
+        }
+        expect(cleanData[1000]).toMatch(/^\s+\d+%\s*\|=*\s*\|\s+\d+\.\d+k\/[\d.]+k/);
     });
 
     test('Array with nCols', async () => {
