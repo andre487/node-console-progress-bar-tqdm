@@ -12,12 +12,12 @@ export type UnitTableType = Record<Intl.LDMLPluralRule, string>;
 export type RawUnitType = string | [string, string] | UnitTableType;
 
 export interface TqdmOptions {
-    // The prefix for the progress bar.
-    desc?: string;
+    // Description, the prefix for the progress bar.
+    description?: string;
 
     // The width of the entire output message.
     // By default, the output fills whole the line.
-    nCols?: number;
+    maxColWidth?: number;
 
     // "Braces" around the progress bar.
     // Default: ["|", "|"].

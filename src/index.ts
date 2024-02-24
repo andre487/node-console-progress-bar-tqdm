@@ -4,8 +4,8 @@ import {getTermColor, getTermColorReset} from './term';
 import {formatTimeDelta, handleUnit, hasLength, isIterable, isIterator, pluralService, scaleUnit} from './utils';
 
 const defaultOptions: Required<TqdmOptions> = {
-    desc: '',
-    nCols: -1,
+    description: '',
+    maxColWidth: -1,
     progressBraces: ['|', '|'],
     progressSymbol: '█',
     progressColor: '',
@@ -19,9 +19,9 @@ const defaultOptions: Required<TqdmOptions> = {
 };
 
 export class TqdmProgress {
-    private readonly desc: string;
+    private readonly description: string;
     private readonly unit: UnitTableType;
-    private readonly nCols: number;
+    private readonly maxColWidth: number;
     private readonly progressLeftBrace: string;
     private readonly progressRightBrace: string;
     private readonly progressSymbol: string;
@@ -49,9 +49,9 @@ export class TqdmProgress {
             ...defaultOptions,
             ...options,
         };
-        this.desc = fullOptions.desc;
+        this.description = fullOptions.description;
         this.unit = handleUnit(fullOptions.unit);
-        this.nCols = fullOptions.nCols;
+        this.maxColWidth = fullOptions.maxColWidth;
 
         [this.progressLeftBrace, this.progressRightBrace] = fullOptions.progressBraces;
         this.progressSymbol = fullOptions.progressSymbol;
@@ -131,7 +131,7 @@ export class TqdmProgress {
             countStr = `${this.num(this.counter)}${this.unitDelimiter}${this.unit[unitKey]}`;
         }
 
-        const descStr = this.desc ? `${this.desc}: ` : '';
+        const descStr = this.description ? `${this.description}: ` : '';
         return ` ${descStr}${countStr}`;
     }
 
@@ -173,7 +173,7 @@ export class TqdmProgress {
         }
 
         const ttyColumns = this.stream.columns;
-        const baseColumns = this.nCols > 0 ? Math.min(this.nCols, ttyColumns) : ttyColumns;
+        const baseColumns = this.maxColWidth > 0 ? Math.min(this.maxColWidth, ttyColumns) : ttyColumns;
         const columns = baseColumns - reduceBy - 2;
 
         if (columns < 4) {

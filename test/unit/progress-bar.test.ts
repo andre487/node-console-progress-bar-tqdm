@@ -77,7 +77,7 @@ describe('TqdmProgress', () => {
 
         const t = tqdm(input, {
             stream,
-            desc: 'TestBar',
+            description: 'TestBar',
             unit: 't',
             progressSymbol: '=',
             progressBraces: ['B', 'E'],
@@ -171,14 +171,14 @@ describe('TqdmProgress', () => {
         expect(cleanData[1001]).toMatch(/^\s+\d+%\s*\|=*\s*\|\s+\d+\.\d+k\/[\d.]+k/);
     });
 
-    test('Array with nCols', async () => {
+    test('Array with maxColWidth', async () => {
         const input = new Array(10).fill(null).map((_, idx) => idx);
 
         const t = tqdm(input, {
             stream,
             initial: 8,
             progressSymbol: '=',
-            nCols: 70,
+            maxColWidth: 70,
             ...commonOptions,
         });
 

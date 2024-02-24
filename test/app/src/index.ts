@@ -16,14 +16,14 @@ async function main() {
 
 
     if (process.env.ENABLE_BIG == '1') {
-        for (const _ of tqdm(123_431_123_000, {desc: 'BIG', progressSymbol: '=', unitScale: true})) {
+        for (const _ of tqdm(123_431_123_000, {description: 'BIG', progressSymbol: '=', unitScale: true})) {
             await someWork(0);
         }
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let t: Tqdm<any> = tqdm(data, {
-        desc: 'ARR',
+        description: 'ARR',
         progressSymbol: '=',
         initial: 0,
         progressColor: 'red',
@@ -33,7 +33,7 @@ async function main() {
     }
 
     t = tqdm(data, {
-        desc: 'IND',
+        description: 'IND',
         progressSymbol: '&',
         initial: 30,
         progressColor: '$100',
@@ -43,14 +43,14 @@ async function main() {
     }
 
     t = tqdm(100, {
-        desc: 'NUM',
+        description: 'NUM',
         progressColor: '#fcd3c2',
     });
     for (const _ of t) {
         await someWork();
     }
 
-    for (const _ of tqdm(gen(), {desc: 'GEN', unit: ['thing', 'things']})) {
+    for (const _ of tqdm(gen(), {description: 'GEN', unit: ['thing', 'things']})) {
         await someWork();
     }
 }
