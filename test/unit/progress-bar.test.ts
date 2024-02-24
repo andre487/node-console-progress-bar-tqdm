@@ -89,9 +89,9 @@ describe('TqdmProgress', () => {
 
         let hasTimers = false;
 
-        expect(stream.data).toHaveLength(23);
+        expect(stream.data).toHaveLength(25);
         const cleanData = getCleanData(stream);
-        expect(cleanData).toHaveLength(12);
+        expect(cleanData).toHaveLength(13);
 
         expect(cleanData[0]).toBe(' TestBar:   0% B                                                        E  0/10 ');
         for (const line of cleanData.slice(1, 11)) {
@@ -123,9 +123,9 @@ describe('TqdmProgress', () => {
 
         let hasTimers = false;
 
-        expect(stream.data).toHaveLength(23);
+        expect(stream.data).toHaveLength(25);
         const cleanData = getCleanData(stream);
-        expect(cleanData).toHaveLength(12);
+        expect(cleanData).toHaveLength(13);
 
         expect(cleanData[0]).toBe('  80% |====================================================             |  8/10 ');
 
@@ -143,7 +143,7 @@ describe('TqdmProgress', () => {
         expect(hasTimers).toBeTruthy();
 
         // `counter` > `total`
-        for (const line of cleanData.slice(3, 11)) {
+        for (const line of cleanData.slice(3, 12)) {
             expect(line).toMatch(/^\s+\d+its?\s+\[\d{2}:\d{2}.\d{3}, \d+.\d{3}s\/it]/);
         }
     });
@@ -160,15 +160,15 @@ describe('TqdmProgress', () => {
             await sleep(0);
         }
 
-        expect(stream.data).toHaveLength(2003);
+        expect(stream.data).toHaveLength(2005);
         const cleanData = getCleanData(stream);
-        expect(cleanData).toHaveLength(1002);
+        expect(cleanData).toHaveLength(1003);
 
         expect(cleanData[0]).toBe('   0% |                                                               | 0/1.00k ');
         for (const line of cleanData.slice(1, 1000)) {
             expect(line).toMatch(/^\s+\d+%\s*\|=*\s*\|\s+\d+\/[\d.]+k/);
         }
-        expect(cleanData[1000]).toMatch(/^\s+\d+%\s*\|=*\s*\|\s+\d+\.\d+k\/[\d.]+k/);
+        expect(cleanData[1001]).toMatch(/^\s+\d+%\s*\|=*\s*\|\s+\d+\.\d+k\/[\d.]+k/);
     });
 
     test('Array with nCols', async () => {
@@ -187,7 +187,7 @@ describe('TqdmProgress', () => {
         }
 
         const cleanData = getCleanData(stream);
-        expect(cleanData).toHaveLength(12);
+        expect(cleanData).toHaveLength(13);
         expect(cleanData[0]).toBe('  80% |============================================           |  8/10 ');
 
         // With progress bar
@@ -196,7 +196,7 @@ describe('TqdmProgress', () => {
         }
 
         // No progress bar
-        for (const line of cleanData.slice(3, 10)) {
+        for (const line of cleanData.slice(3, 12)) {
             expect(line).toHaveLength(29);
         }
     });
@@ -218,9 +218,9 @@ class TestStream extends Writable {
 function checkCountableProgress(stream: TestStream) {
     let hasTimers = false;
 
-    expect(stream.data).toHaveLength(23);
+    expect(stream.data).toHaveLength(25);
     const cleanData = getCleanData(stream);
-    expect(cleanData).toHaveLength(12);
+    expect(cleanData).toHaveLength(13);
 
     expect(cleanData[0]).toBe('   0% |                                                                 |  0/10 ');
     for (const line of cleanData.slice(1, 11)) {
@@ -235,15 +235,15 @@ function checkCountableProgress(stream: TestStream) {
     }
     expect(hasTimers).toBeTruthy();
 
-    expect(cleanData[11]).toBe(EOL);
+    expect(cleanData[12]).toBe(EOL);
 }
 
 function checkUncountableProgress(stream: TestStream) {
     let hasTimers = false;
 
-    expect(stream.data).toHaveLength(23);
+    expect(stream.data).toHaveLength(25);
     const cleanData = getCleanData(stream);
-    expect(cleanData).toHaveLength(12);
+    expect(cleanData).toHaveLength(13);
 
     expect(cleanData[0]).toBe(' 0its');
     for (const line of cleanData.slice(1, 11)) {
@@ -258,7 +258,7 @@ function checkUncountableProgress(stream: TestStream) {
     }
     expect(hasTimers).toBeTruthy();
 
-    expect(cleanData[11]).toBe(EOL);
+    expect(cleanData[12]).toBe(EOL);
 }
 
 

@@ -225,8 +225,7 @@ export class Tqdm<T extends TqdmInput> implements Iterator<TqdmItem<T>, unknown>
     next(): TqdmIteratorResult<T> {
         const res = this.iterator.next();
         if (res.done) {
-            // TODO: fix last render
-            // this.progress.render(true);
+            this.progress.render(true);
             this.progress.close();
         } else {
             this.progress.update();
