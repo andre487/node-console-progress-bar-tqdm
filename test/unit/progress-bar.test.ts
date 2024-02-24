@@ -3,6 +3,7 @@ import {EOL} from 'node:os';
 import {Writable} from 'node:stream';
 import * as timers from 'node:timers/promises';
 import {tqdm} from '../../src';
+import {getTermReturnToLineStart} from '../../src/term';
 
 const commonOptions = {
     forceTerminal: true,
@@ -262,7 +263,7 @@ function checkUncountableProgress(stream: TestStream) {
 
 
 function getCleanData(stream: TestStream): string[] {
-    return stream.data.filter((x) => x !== '\x1B[0G\x1B[K');
+    return stream.data.filter((x) => x !== getTermReturnToLineStart());
 }
 
 async function sleep(time = 5) {

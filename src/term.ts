@@ -18,6 +18,19 @@ const basicAnsiColorsTable = {
 
 export type BasicAnsiColorName = keyof typeof basicAnsiColorsTable;
 
+export function getTermClearScreen(): string {
+    return '\x1B[2J';
+}
+
+export function getTermReturnToLineStart(): string {
+    // ANSI/VT100 codes: https://bash-hackers.gabe565.com/scripting/terminalcodes/
+    // \x1b – ESC, ^[: Start an escape sequence.
+    // \x1b[ – ESC + [.
+    // 0G – Move cursor to the 0th column of the current row.
+    // K – Clear string from the cursor position to the end of line.
+    return '\x1b[0G\x1b[K';
+}
+
 export function getTermColor(name: string, colorType: ColorType = ColorType.Fg): string {
     let color = '\x1B[';
     if (isBasicAnsiColor(name)) {

@@ -1,5 +1,6 @@
 import {EOL} from 'node:os';
 import tty from 'node:tty';
+import {getTermClearScreen, getTermReturnToLineStart} from './term';
 import {hasFd} from './utils';
 
 const defaultTerminalColumns = 80;
@@ -62,7 +63,7 @@ export class TqdmWriteStream {
         const stream = this.getStreamAsTty();
         if (stream) {
             stream.write(EOL);
-            stream.write('\x1B[2J');
+            stream.write(getTermClearScreen());
             stream.cursorTo(0, 0);
         }
     }
@@ -90,12 +91,7 @@ export class TqdmWriteStream {
     };
 
     private forceTerminalResetLine = () => {
-        // ANSI/VT100 codes: https://bash-hackers.gabe565.com/scripting/terminalcodes/
-        // \x1b – ESC, ^[: Start an escape sequence.
-        // \x1b[ – ESC + [.
-        // 0G – Move cursor to the 0th column of the current row.
-        // K – Clear string from the cursor position to the end of line.
-        this.stream.write('\x1b[0G\x1b[K');
+        this.stream.write(getTermReturnToLineStart());
     };
 
     private generalResetLine = () => {
