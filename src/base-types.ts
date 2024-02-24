@@ -29,9 +29,11 @@ export interface TqdmOptions {
 
     // Color of the progress bar in terminal format.
     // If it's not set will be color by default.
-    // This value should be in ANSI format: https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-    // Examples of foreground colors: "\x1B[31m", "\x1B[38;5;118m".
-    // Examples with a background: "\x1B[37m\x1B[41m", "\x1B[38;5;231m\x1B[48;5;18m".
+    // This value is corresponding to ANSI format: https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+    // Examples:
+    //   1. 4-bit (8) colors: "black", "red", …, "white".
+    //   2. 8-bit (256) colors, prefix "$": "$16", "$17", …, "$255".
+    //   3. 24-bit colors: "#ccc", "#00ff12" – CSS-like color literal.
     progressColor?: string;
 
     // Counter initial value.

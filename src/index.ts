@@ -1,15 +1,7 @@
 import {TqdmInnerIterator, TqdmInput, TqdmItem, TqdmIteratorResult, TqdmOptions, UnitTableType} from './base-types';
 import {NumericIterator, TqdmWriteStream} from './supply';
-import {
-    formatTimeDelta,
-    handleUnit,
-    hasLength,
-    isIterable,
-    isIterator,
-    pluralService,
-    scaleUnit,
-
-} from './utils';
+import {getTermColor, getTermColorReset} from './term';
+import {formatTimeDelta, handleUnit, hasLength, isIterable, isIterator, pluralService, scaleUnit} from './utils';
 
 const defaultOptions: Required<TqdmOptions> = {
     desc: '',
@@ -68,9 +60,9 @@ export class TqdmProgress {
         this.minInterval = fullOptions.minInterval;
 
         if (this.stream.isTty) {
-            this.progressColor = fullOptions.progressColor;
+            this.progressColor = getTermColor(fullOptions.progressColor);
             if (this.progressColor) {
-                this.progressColorReset = '\x1B[0m';
+                this.progressColorReset = getTermColorReset();
             }
         }
 

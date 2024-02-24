@@ -1,5 +1,5 @@
 import * as timers from 'node:timers/promises';
-import {tqdm} from '../../../src';
+import {Tqdm, tqdm} from '../../../src';
 
 async function main() {
     const data = new Array(100).fill(0).map((_, idx) => idx);
@@ -21,11 +21,12 @@ async function main() {
         }
     }
 
-    let t = tqdm(data, {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let t: Tqdm<any> = tqdm(data, {
         desc: 'ARR',
         progressSymbol: '=',
         initial: 0,
-        progressColor: '\x1B[38;5;231m\x1B[48;5;18m',
+        progressColor: 'red',
     });
     for (const _ of t) {
         await someWork();
@@ -35,13 +36,17 @@ async function main() {
         desc: 'IND',
         progressSymbol: '&',
         initial: 30,
-        progressColor: '\x1B[32m',
+        progressColor: '$100',
     });
     for (const _ of t) {
         await someWork();
     }
 
-    for (const _ of tqdm(100, {desc: 'NUM'})) {
+    t = tqdm(100, {
+        desc: 'NUM',
+        progressColor: '#fcd3c2',
+    });
+    for (const _ of t) {
         await someWork();
     }
 
