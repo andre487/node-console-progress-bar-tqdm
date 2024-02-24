@@ -28,6 +28,14 @@ module.exports = {
                 '@typescript-eslint/no-var-requires': 0,
             },
         },
+        {
+            'files': [
+                'test/**/*.{js,cjs,ts}',
+            ],
+            'rules': {
+                'no-control-regex': 0,
+            },
+        },
     ],
     'parser': '@typescript-eslint/parser',
     'parserOptions': {
@@ -42,6 +50,15 @@ module.exports = {
         'max-len': ['error', 120],
         'require-jsdoc': 0,
         'linebreak-style': ['error', 'unix'],
+        'no-unused-vars': 0,
+        '@typescript-eslint/no-unused-vars': [
+            'error',
+            {
+                'argsIgnorePattern': '^_',
+                'varsIgnorePattern': '^_',
+                'caughtErrorsIgnorePattern': '^_',
+            },
+        ],
     },
     'ignorePatterns': [
         'dist/*',

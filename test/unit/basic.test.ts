@@ -1,11 +1,18 @@
-import {describe, test, expect} from '@jest/globals';
+import {beforeAll, describe, expect, test} from '@jest/globals';
+import {Writable} from 'node:stream';
 import {tqdm} from '../../src';
 
 describe('Basic iteration', () => {
+    let stream: NodeJS.WritableStream;
+
+    beforeAll(() => {
+        stream = new Writable({write() {}});
+    });
+
     test('Array', () => {
         const input = new Array(100).fill(null).map((_, idx) => idx);
 
-        const res = Array.from(tqdm(input));
+        const res = Array.from(tqdm(input, {stream}));
 
         expect(res).toEqual(input);
     });
@@ -19,7 +26,7 @@ describe('Basic iteration', () => {
             }
         }
 
-        const res = Array.from(tqdm(gen()));
+        const res = Array.from(tqdm(gen(), {stream}));
 
         expect(res).toEqual(arr);
     });
@@ -38,13 +45,13 @@ describe('Basic iteration', () => {
             }
         }
 
-        const res = Array.from(tqdm(new It()));
+        const res = Array.from(tqdm(new It(), {stream}));
 
         expect(res).toEqual(arr);
     });
 
     test('Number', () => {
-        const res = Array.from(tqdm(100));
+        const res = Array.from(tqdm(100, {stream}));
         const expected = new Array(100).fill(null);
 
         expect(res).toEqual(expected);
