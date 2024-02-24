@@ -1,5 +1,5 @@
-import {TqdmInnerIterator, TqdmInput, TqdmItem, TqdmIteratorResult, TqdmOptions} from './base-types';
-import {formatTimeDelta, hasLength, isIterable, isIterator} from './utils';
+import {TqdmInnerIterator, TqdmInput, TqdmItem, TqdmIteratorResult, TqdmOptions, UnitTableType} from './base-types';
+import {formatTimeDelta, handleUnit, hasLength, isIterable, isIterator, pluralService} from './utils';
 
 const defaultTerminalColumns = 64;
 
@@ -16,7 +16,7 @@ const defaultOptions: Required<TqdmOptions> = {
 export class TqdmProgress {
     private readonly ctrlPrefix: string;
     private readonly desc: string;
-    private readonly unit: string;
+    private readonly unit: UnitTableType;
     private readonly progressSymbol: string;
     private readonly stream: NodeJS.WritableStream;
     private readonly streamIsTerminal: boolean;
@@ -36,7 +36,7 @@ export class TqdmProgress {
             ...options,
         };
         this.desc = fullOptions.desc;
-        this.unit = fullOptions.unit;
+        this.unit = handleUnit(fullOptions.unit);
         this.progressSymbol = fullOptions.progressSymbol;
         this.stream = fullOptions.stream;
 
@@ -91,7 +91,8 @@ export class TqdmProgress {
             const percent = Math.round(Math.min(this.counter, this.total) * 100 / this.total);
             countStr = percent == -1 ? '' : `${String(percent).padStart(3, ' ')}% `;
         } else {
-            countStr = `${this.counter}${this.unit}`;
+            const unitKey = pluralService.select(this.counter);
+            countStr = `${this.counter}${this.unit[unitKey]}`;
         }
 
         const descStr = this.desc ? `${this.desc}: ` : '';
@@ -116,7 +117,7 @@ export class TqdmProgress {
                 elapsedTime = '<' + formatTimeDelta(timePerIt * elapsedItems, true);
             }
 
-            res.push(`[${timeSpentStr}${elapsedTime}, ${timePerItStr}s/${this.unit}]`);
+            res.push(`[${timeSpentStr}${elapsedTime}, ${timePerItStr}s/${this.unit['one']}]`);
         }
 
         if (res.length > 1) {

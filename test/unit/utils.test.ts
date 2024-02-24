@@ -1,4 +1,6 @@
 import {describe, expect, test} from '@jest/globals';
+import {UnitTableType} from '../../src/base-types';
+import {handleUnit} from '../../src/utils';
 import * as utils from '../../src/utils';
 
 describe('#formatTimeDelta()', () => {
@@ -60,5 +62,70 @@ describe('#formatTimeDelta()', () => {
     test('Very many years, several days with fractions', () => {
         const res = utils.formatTimeDelta(94613194800000, true);
         expect(res).toBe('2998 years, 2 months, 3 days, 03:00:00.000');
+    });
+});
+
+describe('#handleUnit()', () => {
+    test('String', () => {
+        const res = handleUnit('it');
+
+        expect(res).toEqual({
+            'zero': 'it',
+            'one': 'it',
+            'two': 'it',
+            'few': 'it',
+            'many': 'it',
+            'other': 'it',
+        });
+    });
+
+    test('Tuple', () => {
+        const res = handleUnit(['it', 'its']);
+
+        expect(res).toEqual({
+            'zero': 'its',
+            'one': 'it',
+            'two': 'its',
+            'few': 'its',
+            'many': 'its',
+            'other': 'its',
+        });
+    });
+
+    test('Table', () => {
+        const res = handleUnit({
+            'zero': '0 its',
+            'one': '1 it',
+            'two': '2 its',
+            'few': '3 its',
+            'many': '4 its',
+            'other': '5 its',
+        });
+
+        expect(res).toEqual({
+            'zero': '0 its',
+            'one': '1 it',
+            'two': '2 its',
+            'few': '3 its',
+            'many': '4 its',
+            'other': '5 its',
+        });
+    });
+
+    test('Table with skips', () => {
+        const res = handleUnit({
+            'one': '1 it',
+            'two': '2 its',
+            'many': '4 its',
+        } as UnitTableType);
+
+        expect(res).toEqual({
+            'zero': '4 its',
+            'one': '1 it',
+            'two': '2 its',
+            'few': '4 its',
+            'many': '4 its',
+            'other': '4 its',
+        });
     });
 });

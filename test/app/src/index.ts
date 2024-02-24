@@ -22,6 +22,6 @@ for (const _ of tqdm(100, {desc: 'NUM'})) {
     someWork();
 }
 
-for (const _ of tqdm(gen(), {desc: 'GEN', unit: 'thing'})) {
+for (const _ of tqdm(gen(), {desc: 'GEN', unit: ['thing', 'things']})) {
     someWork();
 }

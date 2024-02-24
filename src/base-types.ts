@@ -8,6 +8,9 @@ export type TqdmItem<T> = T extends Iterable<infer Item> ?
 export type TqdmInnerIterator<T> = Iterator<TqdmItem<T>, unknown, unknown>;
 export type TqdmIteratorResult<T> = IteratorResult<TqdmItem<T>, unknown>;
 
+export type UnitTableType = Record<Intl.LDMLPluralRule, string>;
+export type RawUnitType = string | [string, string] | UnitTableType;
+
 export interface TqdmOptions {
     // A prefix for the progress bar.
     desc?: string;
@@ -25,10 +28,19 @@ export interface TqdmOptions {
     // If `input` is number, this number will be used.
     total?: number;
 
-    // String that will be used to define the unit of each iteration.
+    // Value that will be used to define the unit of each iteration.
+    // It can be a string: "thing", a tuple: ["one thing", "many things"]
+    // or a table:
+    // {
+    //   "zero":  "0 things",
+    //   "one":   "1 thing",
+    //   "two":   "2 things",
+    //   "few":   "3 things",
+    //   "many":  "4 things",
+    //   "other": "some things"
+    // }
     // Default: "it".
-    // TODO: Make plural
-    unit?: string;
+    unit?: RawUnitType;
 
     // Stream to write the progress bar.
     // Default: `process.stderr`.

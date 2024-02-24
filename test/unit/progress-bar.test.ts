@@ -29,11 +29,18 @@ describe('TqdmProgress', () => {
             }
         }
 
-        for (const _ of tqdm(gen(), {stream, forceTerminal: true})) {
+        const t = tqdm(gen(), {
+            stream,
+            unit: ['it', 'its'],
+            forceTerminal: true,
+        });
+        for (const _ of t) {
             await timers.setTimeout(5);
         }
 
         checkUncountableProgress(stream);
+
+        expect(stream.data[3]).toMatch(/\D\dits\s/);
     });
 
     test('Generator with total', async () => {
@@ -124,7 +131,7 @@ describe('TqdmProgress', () => {
 
         // `counter` > `total`
         for (const line of stream.data.slice(3, 11)) {
-            expect(line).toMatch(/^\x1B\[0G\x1B\[K\s+\d+it\s+\[\d{2}:\d{2}.\d{3}, \d+.\d{3}s\/it]/);
+            expect(line).toMatch(/^\x1B\[0G\x1B\[K\s+\d+its?\s+\[\d{2}:\d{2}.\d{3}, \d+.\d{3}s\/it]/);
         }
     });
 });
@@ -167,9 +174,9 @@ function checkUncountableProgress(stream: TestStream) {
     let hasTimers = false;
 
     expect(stream.data).toHaveLength(12);
-    expect(stream.data[0]).toBe('\x1B[0G\x1B[K 0it');
+    expect(stream.data[0]).toBe('\x1B[0G\x1B[K 0its');
     for (const line of stream.data.slice(1, 11)) {
-        expect(line).toMatch(/^\x1B\[0G\x1B\[K \d+it/);
+        expect(line).toMatch(/^\x1B\[0G\x1B\[K \d+its?/);
         if (/.+\[\d{2}:\d{2}.\d{3}, \d+.\d{3}s\/it]/.test(line)) {
             hasTimers = true;
         }

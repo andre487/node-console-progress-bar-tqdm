@@ -1,8 +1,17 @@
+import {RawUnitType, UnitTableType} from './base-types';
+
 interface LengthHolder<T = unknown> {
     length: T;
 }
 
-const pluralRules = new Intl.PluralRules('en-US');
+const pluralKeys: Readonly<Intl.LDMLPluralRule[]> = ['zero', 'one', 'two', 'few', 'many', 'other'];
+export const pluralService = new Intl.PluralRules('en-US');
+
+const _hasOwnProperty = Object.prototype.hasOwnProperty;
+
+export function hasOwnProperty(obj: object, key: string): boolean {
+    return _hasOwnProperty.call(obj, key);
+}
 
 export function isObject(x: unknown): x is object {
     return x !== null && typeof x == 'object';
@@ -50,19 +59,19 @@ export function formatTimeDelta(time: number, showFractions = false): string {
 
     const years = parseInt(years1970Str) - 1970;
     if (years) {
-        const name = pluralRules.select(years) == 'one' ? 'year' : 'years';
+        const name = pluralService.select(years) == 'one' ? 'year' : 'years';
         res += `${years} ${name}, `;
     }
 
     const months = parseInt(monthsStr) - 1;
     if (months) {
-        const name = pluralRules.select(months) == 'one' ? 'month' : 'months';
+        const name = pluralService.select(months) == 'one' ? 'month' : 'months';
         res += `${months} ${name}, `;
     }
 
     const days = parseInt(daysStr) - 1;
     if (days) {
-        const name = pluralRules.select(days) == 'one' ? 'day' : 'days';
+        const name = pluralService.select(days) == 'one' ? 'day' : 'days';
         res += `${days} ${name}, `;
     }
 
@@ -76,5 +85,30 @@ export function formatTimeDelta(time: number, showFractions = false): string {
         res += `.${fracStr}`;
     }
 
+    return res;
+}
+
+export function handleUnit(unit: RawUnitType): UnitTableType {
+    const res = {} as UnitTableType;
+    if (typeof unit == 'string') {
+        for (const unitKey of pluralKeys) {
+            res[unitKey] = unit;
+        }
+    } else if (Array.isArray(unit)) {
+        res['one'] = unit[0];
+        for (const unitKey of pluralKeys) {
+            if (!hasOwnProperty(res, unitKey)) {
+                res[unitKey] = unit[1];
+            }
+        }
+    } else if (isObject(unit)) {
+        Object.assign(res, unit);
+        const defaultVal = res['many'] ?? res['few'] ?? res['one'] ?? res['other'] ?? 'it';
+        for (const unitKey of pluralKeys) {
+            if (!hasOwnProperty(res, unitKey)) {
+                res[unitKey] = defaultVal;
+            }
+        }
+    }
     return res;
 }
