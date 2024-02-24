@@ -14,11 +14,11 @@ function someWork() {
     }
 }
 
-for (const _ of tqdm(100, {desc: 'NUM'})) {
+for (const _ of tqdm(data, {desc: 'ARR', progressSymbol: '=', initial: 30})) {
     someWork();
 }
 
-for (const _ of tqdm(data, {desc: 'ARR', progressSymbol: '='})) {
+for (const _ of tqdm(100, {desc: 'NUM'})) {
     someWork();
 }
 

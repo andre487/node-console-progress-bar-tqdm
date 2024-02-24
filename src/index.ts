@@ -46,7 +46,13 @@ export class TqdmProgress {
         } else {
             this.streamIsTerminal = this.stream === process.stderr || this.stream === process.stdout;
         }
-        this.ctrlPrefix = this.streamIsTerminal ? '\x1b[0G' : '';
+
+        // ANSI/VT100 codes: https://bash-hackers.gabe565.com/scripting/terminalcodes/
+        // \x1b – ESC, ^[: Start an escape sequence.
+        // \x1b[ – ESC + [.
+        // 0G – Move cursor to the 0th column of the current row.
+        // K – Clear string from the cursor position to the end of line.
+        this.ctrlPrefix = this.streamIsTerminal ? '\x1b[0G\x1b[K' : '';
 
         this.counter = fullOptions.initial;
         this.total = fullOptions.total;
@@ -75,9 +81,13 @@ export class TqdmProgress {
         this.stream.write('\n');
     }
 
+    private doesCounterFitTotal() {
+        return this.haveCorrectTotal && this.counter <= this.total;
+    }
+
     private generateLeft() {
         let countStr;
-        if (this.haveCorrectTotal) {
+        if (this.doesCounterFitTotal()) {
             const percent = Math.round(Math.min(this.counter, this.total) * 100 / this.total);
             countStr = percent == -1 ? '' : `${String(percent).padStart(3, ' ')}% `;
         } else {
@@ -90,7 +100,7 @@ export class TqdmProgress {
 
     private generateRight() {
         const res: string[] = [''];
-        if (this.haveCorrectTotal) {
+        if (this.doesCounterFitTotal()) {
             const countStr = String(this.counter).padStart(this.totalDigits, ' ');
             res.push(`${countStr}/${this.total}`);
         }
@@ -101,7 +111,7 @@ export class TqdmProgress {
 
             const timeSpentStr = formatTimeDelta(this.timeSpent, true);
             let elapsedTime = '';
-            if (this.haveCorrectTotal) {
+            if (this.doesCounterFitTotal()) {
                 const elapsedItems = Math.max(0, this.total - this.counter);
                 elapsedTime = '<' + formatTimeDelta(timePerIt * elapsedItems, true);
             }
@@ -117,7 +127,7 @@ export class TqdmProgress {
     }
 
     private generateProgressBar(reduceBy: number): string {
-        if (!this.haveCorrectTotal) {
+        if (!this.doesCounterFitTotal()) {
             return '';
         }
 
@@ -168,7 +178,7 @@ export class Tqdm<T extends TqdmInput> implements Iterator<TqdmItem<T>, unknown>
         this.progress.render();
     }
 
-    [Symbol.iterator](): Iterator<TqdmItem<T>> {
+    [Symbol.iterator](): Tqdm<T> {
         return this;
     }
 

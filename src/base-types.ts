@@ -18,13 +18,11 @@ export interface TqdmOptions {
 
     // Counter initial value.
     // Default: 0.
-    // TODO: fix and test this
     initial?: number;
 
     // The number of expected iterations.
     // If not specified and `input` has `length`, `input.length` will be used.
     // If `input` is number, this number will be used.
-    // TODO: Make limitations with this
     total?: number;
 
     // String that will be used to define the unit of each iteration.

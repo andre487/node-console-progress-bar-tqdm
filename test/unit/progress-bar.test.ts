@@ -76,9 +76,9 @@ describe('TqdmProgress', () => {
         let hasTimers = false;
 
         expect(stream.data).toHaveLength(12);
-        expect(stream.data[0]).toBe('\x1B[0G TestBar:   0% |                                        |  0/10 ');
+        expect(stream.data[0]).toBe('\x1B[0G\x1B[K TestBar:   0% |                                        |  0/10 ');
         for (const line of stream.data.slice(1, 11)) {
-            expect(line).toMatch(/^\x1B\[0G\s+TestBar:\s+\d+%\s*\|=*\s*\|\s+\d+\/\d+/);
+            expect(line).toMatch(/^\x1B\[0G\x1B\[K\s+TestBar:\s+\d+%\s*\|=*\s*\|\s+\d+\/\d+/);
             if (/.+\[\d{2}:\d{2}.\d{3}<\d{2}:\d{2}.\d{3}, \d+.\d{3}s\/t]/.test(line)) {
                 hasTimers = true;
             }
@@ -88,6 +88,44 @@ describe('TqdmProgress', () => {
             console.error('There are no timers in data:', stream.data);
         }
         expect(hasTimers).toBeTruthy();
+    });
+
+    test('Array with initial', async () => {
+        const input = new Array(10).fill(null).map((_, idx) => idx);
+
+        const t = tqdm(input, {
+            stream,
+            forceTerminal: true,
+            initial: 8,
+            progressSymbol: '=',
+        });
+
+        for (const _ of t) {
+            await timers.setTimeout(5);
+        }
+
+        let hasTimers = false;
+
+        expect(stream.data).toHaveLength(12);
+        expect(stream.data[0]).toBe('\x1B[0G\x1B[K  80% |=======================================          |  8/10 ');
+
+        // Still `counter` <= `total`
+        for (const line of stream.data.slice(1, 3)) {
+            expect(line).toMatch(/^\x1B\[0G\x1B\[K\s+\d+%\s*\|=*\s*\|\s+\d+\/\d+/);
+            if (/.+\[\d{2}:\d{2}.\d{3}<\d{2}:\d{2}.\d{3}, \d+.\d{3}s\/it]/.test(line)) {
+                hasTimers = true;
+            }
+        }
+
+        if (!hasTimers) {
+            console.error('There are no timers in data:', stream.data);
+        }
+        expect(hasTimers).toBeTruthy();
+
+        // `counter` > `total`
+        for (const line of stream.data.slice(3, 11)) {
+            expect(line).toMatch(/^\x1B\[0G\x1B\[K\s+\d+it\s+\[\d{2}:\d{2}.\d{3}, \d+.\d{3}s\/it]/);
+        }
     });
 });
 
@@ -108,9 +146,9 @@ function checkCountableProgress(stream: TestStream) {
     let hasTimers = false;
 
     expect(stream.data).toHaveLength(12);
-    expect(stream.data[0]).toBe('\x1B[0G   0% |                                                 |  0/10 ');
+    expect(stream.data[0]).toBe('\x1B[0G\x1B[K   0% |                                                 |  0/10 ');
     for (const line of stream.data.slice(1, 11)) {
-        expect(line).toMatch(/^\x1B\[0G\s+\d+%\s*\|█*\s*\|\s+\d+\/\d+/);
+        expect(line).toMatch(/^\x1B\[0G\x1B\[K\s+\d+%\s*\|█*\s*\|\s+\d+\/\d+/);
         if (/.+\[\d{2}:\d{2}.\d{3}<\d{2}:\d{2}.\d{3}, \d+.\d{3}s\/it]/.test(line)) {
             hasTimers = true;
         }
@@ -120,6 +158,8 @@ function checkCountableProgress(stream: TestStream) {
         console.error('There are no timers in data:', stream.data);
     }
     expect(hasTimers).toBeTruthy();
+
+    expect(stream.data[11]).toBe('\n');
 }
 
 
@@ -127,9 +167,9 @@ function checkUncountableProgress(stream: TestStream) {
     let hasTimers = false;
 
     expect(stream.data).toHaveLength(12);
-    expect(stream.data[0]).toBe('\x1B[0G 0it');
+    expect(stream.data[0]).toBe('\x1B[0G\x1B[K 0it');
     for (const line of stream.data.slice(1, 11)) {
-        expect(line).toMatch(/^\x1B\[0G \d+it/);
+        expect(line).toMatch(/^\x1B\[0G\x1B\[K \d+it/);
         if (/.+\[\d{2}:\d{2}.\d{3}, \d+.\d{3}s\/it]/.test(line)) {
             hasTimers = true;
         }
@@ -139,4 +179,6 @@ function checkUncountableProgress(stream: TestStream) {
         console.error('There are no timers in data:', stream.data);
     }
     expect(hasTimers).toBeTruthy();
+
+    expect(stream.data[11]).toBe('\n');
 }
