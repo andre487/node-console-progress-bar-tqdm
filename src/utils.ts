@@ -15,7 +15,6 @@ export function isIterable<T>(x: unknown): x is Iterable<T> {
     return typeof (x as Iterable<unknown>)[Symbol.iterator] == 'function';
 }
 
-
 export function isIterator<T>(x: unknown): x is Iterator<T> {
     if (!isObject(x)) {
         return false;
