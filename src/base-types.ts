@@ -12,8 +12,12 @@ export type UnitTableType = Record<Intl.LDMLPluralRule, string>;
 export type RawUnitType = string | [string, string] | UnitTableType;
 
 export interface TqdmOptions {
-    // A prefix for the progress bar.
+    // The prefix for the progress bar.
     desc?: string;
+
+    // The width of the entire output message.
+    // By default, the output fills whole the line.
+    nCols?: number;
 
     // "Braces" around the progress bar.
     // Default: ["|", "|"].
@@ -51,5 +55,6 @@ export interface TqdmOptions {
     stream?: NodeJS.WritableStream;
 
     // Force output like the stream is a terminal.
+    // Try to emulate the terminal behavior.
     forceTerminal?: boolean;
 }

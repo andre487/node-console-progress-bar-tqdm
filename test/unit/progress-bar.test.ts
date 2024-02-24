@@ -141,6 +141,36 @@ describe('TqdmProgress', () => {
             expect(line).toMatch(/^\s+\d+its?\s+\[\d{2}:\d{2}.\d{3}, \d+.\d{3}s\/it]/);
         }
     });
+
+    test('Array with nCols', async () => {
+        const input = new Array(10).fill(null).map((_, idx) => idx);
+
+        const t = tqdm(input, {
+            stream,
+            forceTerminal: true,
+            initial: 8,
+            progressSymbol: '=',
+            nCols: 70,
+        });
+
+        for (const _ of t) {
+            await sleep();
+        }
+
+        const cleanData = getCleanData(stream);
+        expect(cleanData).toHaveLength(12);
+        expect(cleanData[0]).toBe('  80% |============================================           |  8/10 ');
+
+        // With progress bar
+        for (const line of cleanData.slice(1, 3)) {
+            expect(line).toHaveLength(70);
+        }
+
+        // No progress bar
+        for (const line of cleanData.slice(3, 10)) {
+            expect(line).toHaveLength(29);
+        }
+    });
 });
 
 class TestStream extends Writable {

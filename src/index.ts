@@ -3,6 +3,7 @@ import {formatTimeDelta, handleUnit, hasLength, isIterable, isIterator, pluralSe
 
 const defaultOptions: Required<TqdmOptions> = {
     desc: '',
+    nCols: -1,
     progressBraces: ['|', '|'],
     progressSymbol: '█',
     unit: 'it',
@@ -15,6 +16,7 @@ const defaultOptions: Required<TqdmOptions> = {
 export class TqdmProgress {
     private readonly desc: string;
     private readonly unit: UnitTableType;
+    private readonly nCols: number;
     private readonly progressLeftBrace: string;
     private readonly progressRightBrace: string;
     private readonly progressSymbol: string;
@@ -35,6 +37,7 @@ export class TqdmProgress {
         };
         this.desc = fullOptions.desc;
         this.unit = handleUnit(fullOptions.unit);
+        this.nCols = fullOptions.nCols;
         [this.progressLeftBrace, this.progressRightBrace] = fullOptions.progressBraces;
         this.progressSymbol = fullOptions.progressSymbol;
         this.stream = new TqdmWriteStream(fullOptions.stream, fullOptions.forceTerminal);
@@ -118,7 +121,10 @@ export class TqdmProgress {
             return '';
         }
 
-        const columns = this.stream.columns - reduceBy - 2;
+        const ttyColumns = this.stream.columns;
+        const baseColumns = this.nCols > 0 ? Math.min(this.nCols, ttyColumns) : ttyColumns;
+        const columns = baseColumns - reduceBy - 2;
+
         if (columns < 4) {
             return '';
         }
