@@ -1,5 +1,5 @@
 import {TqdmInnerIterator, TqdmInput, TqdmItem, TqdmIteratorResult, TqdmOptions, UnitTableType} from './base-types';
-import {NumericIterator} from './supply';
+import {NumericIterator, TqdmWriteStream} from './supply';
 import {
     formatTimeDelta,
     handleUnit,
@@ -8,7 +8,7 @@ import {
     isIterator,
     pluralService,
     scaleUnit,
-    TqdmWriteStream,
+
 } from './utils';
 
 const defaultOptions: Required<TqdmOptions> = {
