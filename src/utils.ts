@@ -162,8 +162,17 @@ export class TqdmWriteStream {
         this.stream.write(EOL);
     }
 
+    clearScreen() {
+        const stream = this.getStreamAsTty();
+        if (stream) {
+            stream.write(EOL);
+            stream.write('\x1B[2J');
+            stream.cursorTo(0, 0);
+        }
+    }
+
     private onTerminalResize = () => {
-        this.stream.write(EOL);
+        this.clearScreen();
         process.once('SIGWINCH', this.onTerminalResize);
     };
 
