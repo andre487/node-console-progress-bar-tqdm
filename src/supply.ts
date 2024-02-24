@@ -20,6 +20,7 @@ export class NumericIterator implements Iterator<number, undefined> {
 
 export class TqdmWriteStream {
     readonly resetLine: () => void;
+    private readonly streamIsTty: boolean;
 
     constructor(
         private readonly stream: NodeJS.WritableStream | tty.WriteStream,
@@ -27,12 +28,17 @@ export class TqdmWriteStream {
     ) {
         this.resetLine = this.generalResetLine;
 
-        if (stream instanceof tty.WriteStream && hasFd(stream) && tty.isatty(stream.fd)) {
+        this.streamIsTty = stream instanceof tty.WriteStream && hasFd(stream) && tty.isatty(stream.fd);
+        if (this.streamIsTty) {
             this.resetLine = this.ttyResetLine;
             process.once('SIGWINCH', this.onTerminalResize);
         } else if (forceTerminal) {
             this.resetLine = this.forceTerminalResetLine;
         }
+    }
+
+    get isTty(): boolean {
+        return this.streamIsTty;
     }
 
     get columns(): number {

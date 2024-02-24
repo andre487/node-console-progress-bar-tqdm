@@ -80,6 +80,7 @@ describe('TqdmProgress', () => {
             unit: 't',
             progressSymbol: '=',
             progressBraces: ['B', 'E'],
+            progressColor: '\x1B[38;5;231m\x1B[48;5;18m',
             ...commonOptions,
         });
         for (const _ of t) {

@@ -10,9 +10,10 @@ async function main() {
         }
     }
 
-    async function someWork(time = 50) {
+    async function someWork(time = 32) {
         await timers.setTimeout(time);
     }
+
 
     if (process.env.ENABLE_BIG == '1') {
         for (const _ of tqdm(123_431_123_000, {desc: 'BIG', progressSymbol: '=', unitScale: true})) {
@@ -20,7 +21,23 @@ async function main() {
         }
     }
 
-    for (const _ of tqdm(data, {desc: 'ARR', progressSymbol: '=', initial: 30})) {
+    let t = tqdm(data, {
+        desc: 'ARR',
+        progressSymbol: '=',
+        initial: 0,
+        progressColor: '\x1B[38;5;231m\x1B[48;5;18m',
+    });
+    for (const _ of t) {
+        await someWork();
+    }
+
+    t = tqdm(data, {
+        desc: 'IND',
+        progressSymbol: '&',
+        initial: 30,
+        progressColor: '\x1B[32m',
+    });
+    for (const _ of t) {
         await someWork();
     }
 

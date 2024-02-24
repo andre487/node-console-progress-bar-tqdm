@@ -16,6 +16,7 @@ const defaultOptions: Required<TqdmOptions> = {
     nCols: -1,
     progressBraces: ['|', '|'],
     progressSymbol: '█',
+    progressColor: '',
     unit: 'it',
     unitScale: false,
     initial: 0,
@@ -32,6 +33,8 @@ export class TqdmProgress {
     private readonly progressLeftBrace: string;
     private readonly progressRightBrace: string;
     private readonly progressSymbol: string;
+    private readonly progressColor: string = '';
+    private readonly progressColorReset: string = '';
     private readonly stream: TqdmWriteStream;
     private readonly minInterval: number;
 
@@ -57,11 +60,19 @@ export class TqdmProgress {
         this.desc = fullOptions.desc;
         this.unit = handleUnit(fullOptions.unit);
         this.nCols = fullOptions.nCols;
+
         [this.progressLeftBrace, this.progressRightBrace] = fullOptions.progressBraces;
         this.progressSymbol = fullOptions.progressSymbol;
 
         this.stream = new TqdmWriteStream(fullOptions.stream, fullOptions.forceTerminal);
         this.minInterval = fullOptions.minInterval;
+
+        if (this.stream.isTty) {
+            this.progressColor = fullOptions.progressColor;
+            if (this.progressColor) {
+                this.progressColorReset = '\x1B[0m';
+            }
+        }
 
         this.counter = fullOptions.initial;
         this.total = fullOptions.total;
@@ -88,9 +99,9 @@ export class TqdmProgress {
         this.render();
     }
 
-    render() {
+    render(force = false) {
         const now = Date.now();
-        if (now - this.lastRenderTime < this.minInterval) {
+        if (!force && now - this.lastRenderTime < this.minInterval) {
             return;
         }
         this.lastRenderTime = now;
@@ -180,8 +191,10 @@ export class TqdmProgress {
         const cnt = Math.trunc(columns * Math.min(this.counter, this.total) / this.total);
         return [
             this.progressLeftBrace,
+            this.progressColor,
             this.progressSymbol.repeat(cnt),
             ' '.repeat(columns - cnt),
+            this.progressColorReset,
             this.progressRightBrace,
         ].join('');
     }
@@ -220,6 +233,8 @@ export class Tqdm<T extends TqdmInput> implements Iterator<TqdmItem<T>, unknown>
     next(): TqdmIteratorResult<T> {
         const res = this.iterator.next();
         if (res.done) {
+            // TODO: fix last render
+            // this.progress.render(true);
             this.progress.close();
         } else {
             this.progress.update();

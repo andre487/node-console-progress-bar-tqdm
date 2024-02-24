@@ -27,6 +27,13 @@ export interface TqdmOptions {
     // Default: "█".
     progressSymbol?: string;
 
+    // Color of the progress bar in terminal format.
+    // If it's not set will be color by default.
+    // This value should be in ANSI format: https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+    // Examples of foreground colors: "\x1B[31m", "\x1B[38;5;118m".
+    // Examples with a background: "\x1B[37m\x1B[41m", "\x1B[38;5;231m\x1B[48;5;18m".
+    progressColor?: string;
+
     // Counter initial value.
     // Default: 0.
     initial?: number;
