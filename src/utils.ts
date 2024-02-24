@@ -138,7 +138,7 @@ export class TqdmWriteStream {
 
         if (stream instanceof tty.WriteStream && hasFd(stream) && tty.isatty(stream.fd)) {
             this.resetLine = this.ttyResetLine;
-            process.on('SIGWINCH', this.onTerminalResize);
+            process.once('SIGWINCH', this.onTerminalResize);
         } else if (forceTerminal) {
             this.resetLine = this.forceTerminalResetLine;
         }
@@ -163,6 +163,7 @@ export class TqdmWriteStream {
 
     private onTerminalResize = () => {
         this.stream.write('\n');
+        process.once('SIGWINCH', this.onTerminalResize);
     };
 
     private getStreamAsTty() {
