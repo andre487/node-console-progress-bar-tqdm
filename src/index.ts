@@ -10,6 +10,7 @@ const defaultOptions: Required<TqdmOptions> = {
     initial: 0,
     total: -1,
     stream: process.stderr,
+    minInterval: 50,
     forceTerminal: false,
 };
 
@@ -21,12 +22,14 @@ export class TqdmProgress {
     private readonly progressRightBrace: string;
     private readonly progressSymbol: string;
     private readonly stream: TqdmWriteStream;
+    private readonly minInterval: number;
 
     private readonly total: number;
     private readonly totalDigits: number = 0;
     private readonly haveCorrectTotal: boolean;
 
-    private readonly startTime: number;
+    private readonly startTime: number = Date.now();
+    private lastRenderTime: number = 0;
     private timeSpent: number = 0;
     private counter: number;
 
@@ -40,7 +43,9 @@ export class TqdmProgress {
         this.nCols = fullOptions.nCols;
         [this.progressLeftBrace, this.progressRightBrace] = fullOptions.progressBraces;
         this.progressSymbol = fullOptions.progressSymbol;
+
         this.stream = new TqdmWriteStream(fullOptions.stream, fullOptions.forceTerminal);
+        this.minInterval = fullOptions.minInterval;
 
         this.counter = fullOptions.initial;
         this.total = fullOptions.total;
@@ -48,8 +53,6 @@ export class TqdmProgress {
         if (this.haveCorrectTotal) {
             this.totalDigits = Math.trunc(Math.log10(this.total)) + 1;
         }
-
-        this.startTime = Date.now();
     }
 
     update(by: number = 1) {
@@ -59,6 +62,12 @@ export class TqdmProgress {
     }
 
     render() {
+        const now = Date.now();
+        if (now - this.lastRenderTime < this.minInterval) {
+            return;
+        }
+        this.lastRenderTime = now;
+
         const left = this.generateLeft();
         const right = this.generateRight();
         const progressBar = this.generateProgressBar(left.length + right.length);

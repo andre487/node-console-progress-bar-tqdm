@@ -4,6 +4,11 @@ import {Writable} from 'node:stream';
 import * as timers from 'node:timers/promises';
 import {tqdm} from '../../src';
 
+const commonOptions = {
+    forceTerminal: true,
+    minInterval: 0,
+};
+
 describe('TqdmProgress', () => {
     let stream: TestStream;
 
@@ -14,7 +19,7 @@ describe('TqdmProgress', () => {
     test('Array', async () => {
         const input = new Array(10).fill(null).map((_, idx) => idx);
 
-        for (const _ of tqdm(input, {stream, forceTerminal: true})) {
+        for (const _ of tqdm(input, {stream, ...commonOptions})) {
             await sleep();
         }
 
@@ -33,7 +38,7 @@ describe('TqdmProgress', () => {
         const t = tqdm(gen(), {
             stream,
             unit: ['it', 'its'],
-            forceTerminal: true,
+            ...commonOptions,
         });
         for (const _ of t) {
             await sleep();
@@ -52,7 +57,7 @@ describe('TqdmProgress', () => {
             }
         }
 
-        for (const _ of tqdm(gen(), {stream, forceTerminal: true, total: 10})) {
+        for (const _ of tqdm(gen(), {stream, total: 10, ...commonOptions})) {
             await sleep();
         }
 
@@ -60,7 +65,7 @@ describe('TqdmProgress', () => {
     });
 
     test('Number', async () => {
-        for (const _ of tqdm(10, {stream, forceTerminal: true})) {
+        for (const _ of tqdm(10, {stream, ...commonOptions})) {
             await sleep();
         }
         checkCountableProgress(stream);
@@ -71,11 +76,11 @@ describe('TqdmProgress', () => {
 
         const t = tqdm(input, {
             stream,
-            forceTerminal: true,
             desc: 'TestBar',
             unit: 't',
             progressSymbol: '=',
             progressBraces: ['B', 'E'],
+            ...commonOptions,
         });
         for (const _ of t) {
             await sleep();
@@ -106,9 +111,9 @@ describe('TqdmProgress', () => {
 
         const t = tqdm(input, {
             stream,
-            forceTerminal: true,
             initial: 8,
             progressSymbol: '=',
+            ...commonOptions,
         });
 
         for (const _ of t) {
@@ -147,10 +152,10 @@ describe('TqdmProgress', () => {
 
         const t = tqdm(input, {
             stream,
-            forceTerminal: true,
             initial: 8,
             progressSymbol: '=',
             nCols: 70,
+            ...commonOptions,
         });
 
         for (const _ of t) {

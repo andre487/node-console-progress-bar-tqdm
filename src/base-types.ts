@@ -54,6 +54,10 @@ export interface TqdmOptions {
     // Default: `process.stderr`.
     stream?: NodeJS.WritableStream;
 
+    // Minimum progress display update interval in milliseconds.
+    // Default: 50ms.
+    minInterval?: number;
+
     // Force output like the stream is a terminal.
     // Try to emulate the terminal behavior.
     forceTerminal?: boolean;
