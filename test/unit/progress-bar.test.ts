@@ -14,7 +14,7 @@ describe('TqdmProgress', () => {
         const input = new Array(10).fill(null).map((_, idx) => idx);
 
         for (const _ of tqdm(input, {stream, forceTerminal: true})) {
-            await timers.setTimeout(5);
+            await timers.setTimeout(1);
         }
 
         checkCountableProgress(stream);
@@ -35,11 +35,10 @@ describe('TqdmProgress', () => {
             forceTerminal: true,
         });
         for (const _ of t) {
-            await timers.setTimeout(5);
+            await timers.setTimeout(1);
         }
 
         checkUncountableProgress(stream);
-
         expect(stream.data[3]).toMatch(/\D\dits\s/);
     });
 
@@ -53,7 +52,7 @@ describe('TqdmProgress', () => {
         }
 
         for (const _ of tqdm(gen(), {stream, forceTerminal: true, total: 10})) {
-            await timers.setTimeout(5);
+            await timers.setTimeout(1);
         }
 
         checkCountableProgress(stream);
@@ -61,7 +60,7 @@ describe('TqdmProgress', () => {
 
     test('Number', async () => {
         for (const _ of tqdm(10, {stream, forceTerminal: true})) {
-            await timers.setTimeout(5);
+            await timers.setTimeout(1);
         }
         checkCountableProgress(stream);
     });
@@ -75,17 +74,18 @@ describe('TqdmProgress', () => {
             desc: 'TestBar',
             unit: 't',
             progressSymbol: '=',
+            progressBraces: ['B', 'E'],
         });
         for (const _ of t) {
-            await timers.setTimeout(5);
+            await timers.setTimeout(1);
         }
 
         let hasTimers = false;
 
         expect(stream.data).toHaveLength(12);
-        expect(stream.data[0]).toBe('\x1B[0G\x1B[K TestBar:   0% |                                        |  0/10 ');
+        expect(stream.data[0]).toBe('\x1B[0G\x1B[K TestBar:   0% B                                        E  0/10 ');
         for (const line of stream.data.slice(1, 11)) {
-            expect(line).toMatch(/^\x1B\[0G\x1B\[K\s+TestBar:\s+\d+%\s*\|=*\s*\|\s+\d+\/\d+/);
+            expect(line).toMatch(/^\x1B\[0G\x1B\[K\s+TestBar:\s+\d+%\s*B=*\s*E\s+\d+\/\d+/);
             if (/.+\[\d{2}:\d{2}.\d{3}<\d{2}:\d{2}.\d{3}, \d+.\d{3}s\/t]/.test(line)) {
                 hasTimers = true;
             }
@@ -108,7 +108,7 @@ describe('TqdmProgress', () => {
         });
 
         for (const _ of t) {
-            await timers.setTimeout(5);
+            await timers.setTimeout(1);
         }
 
         let hasTimers = false;

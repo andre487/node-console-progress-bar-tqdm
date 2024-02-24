@@ -1,3 +1,4 @@
+import tty from 'node:tty';
 import {TqdmInnerIterator, TqdmInput, TqdmItem, TqdmIteratorResult, TqdmOptions, UnitTableType} from './base-types';
 import {formatTimeDelta, handleUnit, hasLength, isIterable, isIterator, pluralService} from './utils';
 
@@ -5,6 +6,7 @@ const defaultTerminalColumns = 64;
 
 const defaultOptions: Required<TqdmOptions> = {
     desc: '',
+    progressBraces: ['|', '|'],
     progressSymbol: '█',
     unit: 'it',
     initial: 0,
@@ -17,6 +19,8 @@ export class TqdmProgress {
     private readonly ctrlPrefix: string;
     private readonly desc: string;
     private readonly unit: UnitTableType;
+    private readonly progressLeftBrace: string;
+    private readonly progressRightBrace: string;
     private readonly progressSymbol: string;
     private readonly stream: NodeJS.WritableStream;
     private readonly streamIsTerminal: boolean;
@@ -37,6 +41,7 @@ export class TqdmProgress {
         };
         this.desc = fullOptions.desc;
         this.unit = handleUnit(fullOptions.unit);
+        [this.progressLeftBrace, this.progressRightBrace] = fullOptions.progressBraces;
         this.progressSymbol = fullOptions.progressSymbol;
         this.stream = fullOptions.stream;
 
@@ -138,7 +143,12 @@ export class TqdmProgress {
         }
 
         const cnt = Math.trunc(columns * Math.min(this.counter, this.total) / this.total);
-        return `|${this.progressSymbol.repeat(cnt)}${' '.repeat(columns - cnt)}|`;
+        return [
+            this.progressLeftBrace,
+            this.progressSymbol.repeat(cnt),
+            ' '.repeat(columns - cnt),
+            this.progressRightBrace,
+        ].join('');
     }
 
     private getColumns(): number {
@@ -146,7 +156,7 @@ export class TqdmProgress {
             return defaultTerminalColumns;
         }
         if (this.streamIsTerminal) {
-            return process.stdout.columns;
+            return (this.stream as tty.WriteStream).columns;
         }
         return defaultTerminalColumns;
     }

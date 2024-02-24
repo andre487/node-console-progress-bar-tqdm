@@ -15,6 +15,10 @@ export interface TqdmOptions {
     // A prefix for the progress bar.
     desc?: string;
 
+    // "Braces" around the progress bar.
+    // Default: ["|", "|"].
+    progressBraces?: [string, string];
+
     // Symbol for building the progress bar.
     // Default: "█".
     progressSymbol?: string;
@@ -35,8 +39,8 @@ export interface TqdmOptions {
     //   "zero":  "0 things",
     //   "one":   "1 thing",
     //   "two":   "2 things",
-    //   "few":   "3 things",
-    //   "many":  "4 things",
+    //   "few":   "few things",
+    //   "many":  "many things",
     //   "other": "some things"
     // }
     // Default: "it".
