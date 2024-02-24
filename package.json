@@ -9,8 +9,7 @@
     "node": ">= 16"
   },
   "scripts": {
-    "watch": "parcel watch",
-    "build": "parcel build",
+    "build": "parcel build --no-cache",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
     "test:app-src": "ts-node ./test/app/src/index.ts",
