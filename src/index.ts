@@ -1,8 +1,5 @@
-import tty from 'node:tty';
 import {TqdmInnerIterator, TqdmInput, TqdmItem, TqdmIteratorResult, TqdmOptions, UnitTableType} from './base-types';
-import {formatTimeDelta, handleUnit, hasLength, isIterable, isIterator, pluralService} from './utils';
-
-const defaultTerminalColumns = 64;
+import {formatTimeDelta, handleUnit, hasLength, isIterable, isIterator, pluralService, TqdmWriteStream} from './utils';
 
 const defaultOptions: Required<TqdmOptions> = {
     desc: '',
@@ -16,15 +13,12 @@ const defaultOptions: Required<TqdmOptions> = {
 };
 
 export class TqdmProgress {
-    private readonly ctrlPrefix: string;
     private readonly desc: string;
     private readonly unit: UnitTableType;
     private readonly progressLeftBrace: string;
     private readonly progressRightBrace: string;
     private readonly progressSymbol: string;
-    private readonly stream: NodeJS.WritableStream;
-    private readonly streamIsTerminal: boolean;
-    private readonly forceTerminal: boolean;
+    private readonly stream: TqdmWriteStream;
 
     private readonly total: number;
     private readonly totalDigits: number = 0;
@@ -43,21 +37,7 @@ export class TqdmProgress {
         this.unit = handleUnit(fullOptions.unit);
         [this.progressLeftBrace, this.progressRightBrace] = fullOptions.progressBraces;
         this.progressSymbol = fullOptions.progressSymbol;
-        this.stream = fullOptions.stream;
-
-        this.forceTerminal = fullOptions.forceTerminal;
-        if (this.forceTerminal) {
-            this.streamIsTerminal = true;
-        } else {
-            this.streamIsTerminal = this.stream === process.stderr || this.stream === process.stdout;
-        }
-
-        // ANSI/VT100 codes: https://bash-hackers.gabe565.com/scripting/terminalcodes/
-        // \x1b – ESC, ^[: Start an escape sequence.
-        // \x1b[ – ESC + [.
-        // 0G – Move cursor to the 0th column of the current row.
-        // K – Clear string from the cursor position to the end of line.
-        this.ctrlPrefix = this.streamIsTerminal ? '\x1b[0G\x1b[K' : '';
+        this.stream = new TqdmWriteStream(fullOptions.stream, fullOptions.forceTerminal);
 
         this.counter = fullOptions.initial;
         this.total = fullOptions.total;
@@ -79,11 +59,12 @@ export class TqdmProgress {
         const left = this.generateLeft();
         const right = this.generateRight();
         const progressBar = this.generateProgressBar(left.length + right.length);
-        this.stream.write(`${this.ctrlPrefix}${left}${progressBar}${right}`);
+        this.stream.resetLine();
+        this.stream.write(`${left}${progressBar}${right}`);
     }
 
     close() {
-        this.stream.write('\n');
+        this.stream.finalize();
     }
 
     private doesCounterFitTotal() {
@@ -137,7 +118,7 @@ export class TqdmProgress {
             return '';
         }
 
-        const columns = this.getColumns() - reduceBy - 2;
+        const columns = this.stream.columns - reduceBy - 2;
         if (columns < 4) {
             return '';
         }
@@ -149,16 +130,6 @@ export class TqdmProgress {
             ' '.repeat(columns - cnt),
             this.progressRightBrace,
         ].join('');
-    }
-
-    private getColumns(): number {
-        if (this.forceTerminal) {
-            return defaultTerminalColumns;
-        }
-        if (this.streamIsTerminal) {
-            return (this.stream as tty.WriteStream).columns;
-        }
-        return defaultTerminalColumns;
     }
 }
 

@@ -39,7 +39,7 @@ describe('TqdmProgress', () => {
         }
 
         checkUncountableProgress(stream);
-        expect(stream.data[3]).toMatch(/\D\dits\s/);
+        expect(getCleanData(stream)[3]).toMatch(/\D\dits\s/);
     });
 
     test('Generator with total', async () => {
@@ -82,10 +82,13 @@ describe('TqdmProgress', () => {
 
         let hasTimers = false;
 
-        expect(stream.data).toHaveLength(12);
-        expect(stream.data[0]).toBe('\x1B[0G\x1B[K TestBar:   0% B                                        E  0/10 ');
-        for (const line of stream.data.slice(1, 11)) {
-            expect(line).toMatch(/^\x1B\[0G\x1B\[K\s+TestBar:\s+\d+%\s*B=*\s*E\s+\d+\/\d+/);
+        expect(stream.data).toHaveLength(23);
+        const cleanData = getCleanData(stream);
+        expect(cleanData).toHaveLength(12);
+
+        expect(cleanData[0]).toBe(' TestBar:   0% B                                                        E  0/10 ');
+        for (const line of cleanData.slice(1, 11)) {
+            expect(line).toMatch(/^\s+TestBar:\s+\d+%\s*B=*\s*E\s+\d+\/\d+/);
             if (/.+\[\d{2}:\d{2}.\d{3}<\d{2}:\d{2}.\d{3}, \d+.\d{3}s\/t]/.test(line)) {
                 hasTimers = true;
             }
@@ -113,12 +116,15 @@ describe('TqdmProgress', () => {
 
         let hasTimers = false;
 
-        expect(stream.data).toHaveLength(12);
-        expect(stream.data[0]).toBe('\x1B[0G\x1B[K  80% |=======================================          |  8/10 ');
+        expect(stream.data).toHaveLength(23);
+        const cleanData = getCleanData(stream);
+        expect(cleanData).toHaveLength(12);
+
+        expect(cleanData[0]).toBe('  80% |====================================================             |  8/10 ');
 
         // Still `counter` <= `total`
-        for (const line of stream.data.slice(1, 3)) {
-            expect(line).toMatch(/^\x1B\[0G\x1B\[K\s+\d+%\s*\|=*\s*\|\s+\d+\/\d+/);
+        for (const line of cleanData.slice(1, 3)) {
+            expect(line).toMatch(/^\s+\d+%\s*\|=*\s*\|\s+\d+\/\d+/);
             if (/.+\[\d{2}:\d{2}.\d{3}<\d{2}:\d{2}.\d{3}, \d+.\d{3}s\/it]/.test(line)) {
                 hasTimers = true;
             }
@@ -130,8 +136,8 @@ describe('TqdmProgress', () => {
         expect(hasTimers).toBeTruthy();
 
         // `counter` > `total`
-        for (const line of stream.data.slice(3, 11)) {
-            expect(line).toMatch(/^\x1B\[0G\x1B\[K\s+\d+its?\s+\[\d{2}:\d{2}.\d{3}, \d+.\d{3}s\/it]/);
+        for (const line of cleanData.slice(3, 11)) {
+            expect(line).toMatch(/^\s+\d+its?\s+\[\d{2}:\d{2}.\d{3}, \d+.\d{3}s\/it]/);
         }
     });
 });
@@ -152,10 +158,13 @@ class TestStream extends Writable {
 function checkCountableProgress(stream: TestStream) {
     let hasTimers = false;
 
-    expect(stream.data).toHaveLength(12);
-    expect(stream.data[0]).toBe('\x1B[0G\x1B[K   0% |                                                 |  0/10 ');
-    for (const line of stream.data.slice(1, 11)) {
-        expect(line).toMatch(/^\x1B\[0G\x1B\[K\s+\d+%\s*\|█*\s*\|\s+\d+\/\d+/);
+    expect(stream.data).toHaveLength(23);
+    const cleanData = getCleanData(stream);
+    expect(cleanData).toHaveLength(12);
+
+    expect(cleanData[0]).toBe('   0% |                                                                 |  0/10 ');
+    for (const line of cleanData.slice(1, 11)) {
+        expect(line).toMatch(/^\s+\d+%\s*\|█*\s*\|\s+\d+\/\d+/);
         if (/.+\[\d{2}:\d{2}.\d{3}<\d{2}:\d{2}.\d{3}, \d+.\d{3}s\/it]/.test(line)) {
             hasTimers = true;
         }
@@ -166,17 +175,19 @@ function checkCountableProgress(stream: TestStream) {
     }
     expect(hasTimers).toBeTruthy();
 
-    expect(stream.data[11]).toBe('\n');
+    expect(cleanData[11]).toBe('\n');
 }
-
 
 function checkUncountableProgress(stream: TestStream) {
     let hasTimers = false;
 
-    expect(stream.data).toHaveLength(12);
-    expect(stream.data[0]).toBe('\x1B[0G\x1B[K 0its');
-    for (const line of stream.data.slice(1, 11)) {
-        expect(line).toMatch(/^\x1B\[0G\x1B\[K \d+its?/);
+    expect(stream.data).toHaveLength(23);
+    const cleanData = getCleanData(stream);
+    expect(cleanData).toHaveLength(12);
+
+    expect(cleanData[0]).toBe(' 0its');
+    for (const line of cleanData.slice(1, 11)) {
+        expect(line).toMatch(/^ \d+its?/);
         if (/.+\[\d{2}:\d{2}.\d{3}, \d+.\d{3}s\/it]/.test(line)) {
             hasTimers = true;
         }
@@ -187,5 +198,10 @@ function checkUncountableProgress(stream: TestStream) {
     }
     expect(hasTimers).toBeTruthy();
 
-    expect(stream.data[11]).toBe('\n');
+    expect(cleanData[11]).toBe('\n');
+}
+
+
+function getCleanData(stream: TestStream): string[] {
+    return stream.data.filter((x) => x !== '\x1B[0G\x1B[K');
 }

@@ -1,8 +1,15 @@
+import tty from 'node:tty';
 import {RawUnitType, UnitTableType} from './base-types';
 
 interface LengthHolder<T = unknown> {
     length: T;
 }
+
+interface FdHolder<T = unknown> {
+    fd: T;
+}
+
+const defaultTerminalColumns = 80;
 
 const pluralKeys: Readonly<Intl.LDMLPluralRule[]> = ['zero', 'one', 'two', 'few', 'many', 'other'];
 export const pluralService = new Intl.PluralRules('en-US');
@@ -36,6 +43,13 @@ export function hasLength(x: unknown): x is LengthHolder<number> {
         return false;
     }
     return typeof (x as LengthHolder).length == 'number';
+}
+
+export function hasFd(x: unknown): x is FdHolder<number> {
+    if (!isObject(x)) {
+        return false;
+    }
+    return typeof (x as FdHolder).fd == 'number';
 }
 
 export function formatTimeDelta(time: number, showFractions = false): string {
@@ -111,4 +125,67 @@ export function handleUnit(unit: RawUnitType): UnitTableType {
         }
     }
     return res;
+}
+
+export class TqdmWriteStream {
+    readonly resetLine: () => void;
+
+    constructor(
+        private readonly stream: NodeJS.WritableStream | tty.WriteStream,
+        forceTerminal = false,
+    ) {
+        this.resetLine = this.generalResetLine;
+
+        if (stream instanceof tty.WriteStream && hasFd(stream) && tty.isatty(stream.fd)) {
+            this.resetLine = this.ttyResetLine;
+        } else if (forceTerminal) {
+            this.resetLine = this.forceTerminalResetLine;
+        }
+    }
+
+    get columns(): number {
+        const stream = this.getStreamAsTty();
+        if (stream) {
+            return stream.columns;
+        }
+        return defaultTerminalColumns;
+    }
+
+    write(chunk: string) {
+        this.stream.write(chunk);
+    }
+
+    finalize() {
+        this.stream.write('\n');
+    }
+
+    private getStreamAsTty() {
+        if (this.stream instanceof tty.WriteStream) {
+            return this.stream;
+        }
+        return null;
+    }
+
+    private ttyResetLine = () => {
+        const stream = this.getStreamAsTty();
+        if (stream) {
+            stream.clearLine(0);
+            stream.cursorTo(0);
+        } else {
+            this.forceTerminalResetLine();
+        }
+    };
+
+    private forceTerminalResetLine = () => {
+        // ANSI/VT100 codes: https://bash-hackers.gabe565.com/scripting/terminalcodes/
+        // \x1b – ESC, ^[: Start an escape sequence.
+        // \x1b[ – ESC + [.
+        // 0G – Move cursor to the 0th column of the current row.
+        // K – Clear string from the cursor position to the end of line.
+        this.stream.write('\x1b[0G\x1b[K');
+    };
+
+    private generalResetLine = () => {
+        this.stream.write('\n');
+    };
 }
