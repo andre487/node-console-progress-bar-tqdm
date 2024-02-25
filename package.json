@@ -10,14 +10,14 @@
     "./src"
   ],
   "exports": {
-    "types": "./dist/types.d.ts",
+    "types": "./dist/_types/index.d.ts",
     "require": "./dist/_cjs/index.js",
     "import": "./dist/_esm/index.js",
     "default": "./dist/_cjs/index.js"
   },
   "main": "./dist/_cjs/index.js",
   "module": "./dist/_esm/index.js",
-  "types": "./dist/types.d.ts",
+  "types": "./dist/_types/index.d.ts",
   "scripts": {
     "build": "node scripts/npm-build.js",
     "test": "node scripts/npm-test.js",

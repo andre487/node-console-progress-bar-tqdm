@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.dist-cjs.json",
   "compilerOptions": {
-    "outFile": "./dist/types.d.ts",
+    "outDir": "./dist/_types",
     "declaration": true,
     "emitDeclarationOnly": true
   }
