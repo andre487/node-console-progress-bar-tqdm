@@ -8,7 +8,11 @@ async function main() {
     console.log('| File | Title | Description | Tags |');
     console.log('| ---- | ----- | ----------- | ---- |');
     for (const {title, description, tags, file} of examples.default) {
-        const origFilePath = path.relative(projectDir, file.replace('file://', ''));
+        const normalizedFilePath = path
+            .normalize(file.replace('file://', ''))
+            .replace(/\\([A-Z]:\\)/, '$1'); // Windows fix
+
+        const origFilePath = path.relative(projectDir, normalizedFilePath);
         let filePath = origFilePath.replace(/\.mjs$/, '.mts');
         if (!fs.existsSync(path.join(projectDir, filePath))) {
             filePath = origFilePath;
