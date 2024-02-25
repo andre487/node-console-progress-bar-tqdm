@@ -6,6 +6,7 @@ module.exports = example({
     title: 'Basic example',
     description: 'Iterate over an array without any options',
     tags: ['CJS', 'Array', 'defaults'],
+    file: __filename,
     async run() {
         const data = new Array(100).fill(null).map((_, idx) => idx);
 

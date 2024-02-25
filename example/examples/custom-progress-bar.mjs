@@ -22,6 +22,7 @@ export default example({
     title: 'Custom progress style',
     description: 'Fully customized progress bar written on TypeScript',
     tags: ['TS', 'Generator', 'units', 'color', 'styling', 'max width'],
+    file: import.meta.url,
     async run() {
         const opts = {
             total,

@@ -6,6 +6,7 @@ module.exports = example({
     title: 'Using progress bar directly',
     description: 'There is no iteration over tqdm iterator, direct TqdmProgress usage. Progress split to 2 parts',
     tags: ['CJS', 'TqdmProgress', 'flush output', 'resuming', 'color'],
+    file: __filename,
     async run() {
         const total = 100;
 

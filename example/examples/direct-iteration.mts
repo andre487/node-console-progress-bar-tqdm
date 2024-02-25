@@ -54,6 +54,7 @@ export default example({
     title: 'Direct usage of Tqdm class',
     description: 'Very advanced example with direct Tqdm usage',
     tags: ['TS', 'async', 'async/await', 'Generator', 'AsyncGenerator', 'no loop', 'units', 'color', 'styling'],
+    file: import.meta.url,
     async run() {
         const baseOpts: TqdmOptions = {
             total,

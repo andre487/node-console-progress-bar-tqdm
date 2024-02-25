@@ -28,6 +28,7 @@
     "start:run-src": "ts-node ./test/app/run-src.ts",
     "start:run-dist-cjs": "npm run build && node --enable-source-maps ./test/app/run-dist-cjs.js",
     "start:run-dist-esm": "npm run build && node --enable-source-maps ./test/app/run-dist-esm.mjs",
+    "readme:generate-examples": "node scripts/extract-examples.js",
     "prepare": "husky"
   },
   "keywords": [],

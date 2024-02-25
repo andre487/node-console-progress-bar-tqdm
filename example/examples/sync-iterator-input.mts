@@ -32,6 +32,7 @@ export default example({
     title: 'Iteration over sync iterator',
     description: 'Example with Iterator and Iterable as input',
     tags: ['TS', 'Iterator', 'Iterable', 'color', 'styling'],
+    file: import.meta.url,
     async run() {
         const opts: TqdmOptions = {
             total: It.total,

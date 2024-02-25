@@ -6,6 +6,7 @@ module.exports = example({
     title: 'Unit scaling, range iteration',
     description: 'Example with iteration over number range defined by `total` with unit scaling (k,M,G,T)',
     tags: ['CJS', 'units', 'unit scaling'],
+    file: __filename,
     async run() {
         const res = [];
         /**

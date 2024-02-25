@@ -32,6 +32,7 @@ export default example({
     title: 'Iteration over async iterator',
     description: 'Example with AsyncIterator and AsyncIterable as input',
     tags: ['TS', 'async', 'for/await', 'AsyncIterator', 'AsyncIterable', 'color', 'styling'],
+    file: import.meta.url,
     async run() {
         const opts: TqdmOptions = {
             total: It.total,
