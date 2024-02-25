@@ -1,5 +1,5 @@
 import * as timers from 'node:timers/promises';
-import {Tqdm, tqdm} from '../../../src';
+import {Tqdm, tqdm} from '../../src';
 
 async function main() {
     const data = new Array(100).fill(0).map((_, idx) => idx);

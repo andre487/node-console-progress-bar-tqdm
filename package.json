@@ -24,9 +24,10 @@
     "test:unit": "jest",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "start": "npm run start:app-src && npm run start:app-dist",
-    "start:app-src": "ts-node ./test/app/src/index.ts",
-    "start:app-dist": "npm run build && node ./test/app/dist/index.js",
+    "start": "npm run start:run-src && npm run start:run-dist-cjs && npm run start:run-dist-esm",
+    "start:run-src": "ts-node ./test/app/run-src.ts",
+    "start:run-dist-cjs": "npm run build && node --enable-source-maps ./test/app/run-dist-cjs.js",
+    "start:run-dist-esm": "npm run build && node --enable-source-maps ./test/app/run-dist-esm.mjs",
     "prepare": "husky"
   },
   "keywords": [],

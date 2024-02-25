@@ -1,5 +1,5 @@
-const timers = require('node:timers/promises');
-const {tqdm} = require('../../../dist/_cjs');
+import * as timers from 'node:timers/promises';
+import {tqdm} from '../../dist/_esm/index.js';
 
 async function main() {
     const data = new Array(100).fill(0).map((_, idx) => idx);

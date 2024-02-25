@@ -13,7 +13,7 @@ function cdToProj() {
 }
 
 function logTitle(title) {
-    console.log(colors.green(title));
+    console.log(colors.cyan(title));
 }
 
 function run(title, cmd) {
@@ -26,18 +26,12 @@ function run(title, cmd) {
     return true;
 }
 
-function clearDir(dir, verbose = false) {
-    logTitle('==> Clear directory');
-    for (const fileName of fs.readdirSync(dir)) {
-        if (fileName == '.gitignore') {
-            continue;
-        }
-        if (verbose) {
-            console.log('Remove', fileName);
-        }
-        const filePath = path.join(dir, fileName);
-        fs.rmSync(filePath, {recursive: true});
+function clearDistDir() {
+    logTitle('==> Clear `dist` directory');
+    if (fs.existsSync(distDir)) {
+        fs.rmSync(distDir, {recursive: true});
     }
+    fs.mkdirSync(distDir);
 }
 
 module.exports = {
@@ -48,5 +42,5 @@ module.exports = {
     cdToProj,
     logTitle,
     run,
-    clearDir,
+    clearDistDir,
 };

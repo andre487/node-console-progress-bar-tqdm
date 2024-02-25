@@ -1,14 +1,14 @@
 const colors = require('colors/safe');
-const {run, logTitle, cdToProj} = require('./common');
+const cm = require('./common');
 
-cdToProj();
+cm.cdToProj();
 let wereErrors = false;
 
-run('==> Running type check', 'npm run type-check') || (wereErrors = true);
-run('==> Running linters', 'npm run lint') || (wereErrors = true);
-run('==> Running unit tests', 'npm run test:unit') || (wereErrors = true);
+cm.run('==> Running type check', 'npm run type-check') || (wereErrors = true);
+cm.run('==> Running linters', 'npm run lint') || (wereErrors = true);
+cm.run('==> Running unit tests', 'npm run test:unit') || (wereErrors = true);
 
-logTitle('==> Result');
+cm.logTitle('==> Result');
 if (wereErrors) {
     console.log(colors.red('FAILED: There were errors in tests'));
     process.exit(1);
