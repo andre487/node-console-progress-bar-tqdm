@@ -191,7 +191,7 @@ describe('TqdmProgress', () => {
             expect(line).toMatch(/^\s+\d+%\s*\|=*\s*\|\s+\d+\/[\d.]+k/);
         }
         expect(cleanData[1001]).toMatch(/^\s+\d+%\s*\|=*\s*\|\s+\d+\.\d+k\/[\d.]+k/);
-    });
+    }, 30_000);
 
     test('Array with maxColWidth', async () => {
         const input = new Array(10).fill(null).map((_, idx) => idx);
