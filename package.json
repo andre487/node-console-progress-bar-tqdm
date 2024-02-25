@@ -16,7 +16,7 @@
     "test:app-dist": "npm run build && node ./test/app/dist/index.js",
     "test:app": "npm run test:app-src && npm run test:app-dist",
     "test:unit": "jest",
-    "test": "./scripts/npm-test.sh",
+    "test": "node scripts/npm-test.js",
     "prepare": "husky"
   },
   "keywords": [],
@@ -27,6 +27,7 @@
     "@parcel/transformer-typescript-types": "2.11.0",
     "@typescript-eslint/eslint-plugin": "7.0.2",
     "@typescript-eslint/parser": "7.0.2",
+    "colors": "1.4.0",
     "eslint": "8.56.0",
     "eslint-config-google": "0.14.0",
     "husky": "9.0.11",

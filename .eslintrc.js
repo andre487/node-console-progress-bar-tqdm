@@ -19,6 +19,7 @@ module.exports = {
         },
         {
             'files': [
+                'scripts/**/*.{js,cjs}',
                 'test/app/dist/**/*.{js,cjs}',
             ],
             'parserOptions': {
