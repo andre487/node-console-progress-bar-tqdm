@@ -28,7 +28,7 @@ async function iterate(tq: Tqdm<Generator<Item>>): Promise<Item[]> {
 }
 
 export default example({
-    title: 'Custom progress on TS',
+    title: 'Custom progress style',
     description: 'Fully customized progress bar written on TypeScript',
     async run() {
         const opts: TqdmOptions = {

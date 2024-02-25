@@ -19,7 +19,7 @@ async function iterate(tq) {
     return res;
 }
 export default example({
-    title: 'Custom progress on TS',
+    title: 'Custom progress style',
     description: 'Fully customized progress bar written on TypeScript',
     async run() {
         const opts = {
