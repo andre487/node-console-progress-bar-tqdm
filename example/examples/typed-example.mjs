@@ -1,4 +1,3 @@
-// @ts-ignore
 import example from '../lib/definition.cjs';
 import { tqdm } from 'node-console-progress-bar-tqdm';
 import * as timers from 'node:timers/promises';
@@ -11,24 +10,30 @@ function* gen() {
         };
     }
 }
+async function iterate(tq) {
+    const res = [];
+    for (const x of tq) {
+        res.push(x);
+        await timers.setTimeout(16);
+    }
+    return res;
+}
 export default example({
     title: 'Custom progress on TS',
     description: 'Fully customized progress bar written on TypeScript',
     async run() {
-        const progress = tqdm(gen(), {
+        const opts = {
             total,
-            description: 'Custom style',
+            description: 'Custom styling',
             maxColWidth: 100,
             progressSymbol: '=',
             progressBraces: ['[', ']'],
             progressColor: '#f1f0c2',
             unit: ['thing', 'things'],
-        });
-        const res = [];
-        for (const x of progress) {
-            res.push(x);
-            await timers.setTimeout(16);
-        }
+        };
+        const inp = gen();
+        const tq = tqdm(inp, opts);
+        const res = await iterate(tq);
         console.log('Result length:', res.length);
     },
 });

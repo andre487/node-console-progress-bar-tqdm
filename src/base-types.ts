@@ -16,8 +16,8 @@ export type TqdmItem<TInput> = TInput extends Iterable<infer Item> ?
                     number :
                     never;
 
-export type TqdmUnitTableType = Record<Intl.LDMLPluralRule, string>;
-export type TqdmRawUnitType = string | [string, string] | TqdmUnitTableType;
+export type TqdmUnitTable = Record<Intl.LDMLPluralRule, string>;
+export type TqdmUnitOption = string | [string, string] | TqdmUnitTable;
 
 export type TqdmOptions = {
     // Description, the prefix for the progress bar.
@@ -65,7 +65,7 @@ export type TqdmOptions = {
     //   "other": "some things"
     // }
     // Default: "it".
-    unit?: TqdmRawUnitType;
+    unit?: TqdmUnitOption;
 
     // If true, the number of iterations will be reduced/scaled
     // automatically and a metric prefix following the

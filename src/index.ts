@@ -5,13 +5,17 @@ import {
     TqdmInput,
     TqdmItem,
     TqdmOptions,
-    TqdmUnitTableType,
+    TqdmUnitTable,
 } from './base-types';
 import {
-    TqdmAsyncResultIterator, TqdmAsyncResultIteratorReturn,
-    TqdmNumericIterator,
+    TqdmAsyncResultIteratorReturn,
     TqdmSyncResultIterator,
-    TqdmSyncResultIteratorReturn, TqdmInnerIterator, TqdmIteratorResultAsync, TqdmIteratorResultSync,
+    TqdmSyncResultIteratorReturn,
+    TqdmInnerIterator,
+    TqdmIteratorResultSync,
+    TqdmAsyncResultIterator,
+    TqdmNumericIterator,
+    TqdmIteratorResultAsync,
     TqdmWriteStream,
 } from './supply';
 import {getTermColor, getTermColorReset} from './term';
@@ -25,6 +29,20 @@ import {
     pluralService,
     scaleUnit,
 } from './utils';
+
+export {
+    ITqdmAsyncIteratorContainer,
+    ITqdmSyncIteratorContainer,
+    ITqdmProgress,
+    TqdmInput,
+    TqdmOptions,
+    TqdmUnitTable,
+    TqdmUnitOption,
+} from './base-types';
+export {
+    TqdmAsyncResultIterator,
+    TqdmSyncResultIterator,
+} from './supply';
 
 const defaultOptions: Required<TqdmOptions> = {
     description: '',
@@ -122,7 +140,7 @@ export class Tqdm<TInput extends TqdmInput> implements Iterable<TqdmItem<TInput>
 
 export class TqdmProgress implements ITqdmProgress {
     private readonly description: string;
-    private readonly unit: TqdmUnitTableType;
+    private readonly unit: TqdmUnitTable;
     private readonly maxColWidth: number;
     private readonly progressLeftBrace: string;
     private readonly progressRightBrace: string;

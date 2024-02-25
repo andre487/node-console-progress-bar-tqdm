@@ -1,7 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import example from '../lib/definition.cjs';
-import {tqdm} from 'node-console-progress-bar-tqdm';
+import {tqdm, TqdmOptions, Tqdm, TqdmInput} from 'node-console-progress-bar-tqdm';
 import * as timers from 'node:timers/promises';
 
 type Item = {
@@ -20,11 +18,20 @@ function* gen(): Generator<Item, undefined, undefined> {
     }
 }
 
+async function iterate(tq: Tqdm<Generator<Item>>): Promise<Item[]> {
+    const res: Item[] = [];
+    for (const x of tq) {
+        res.push(x);
+        await timers.setTimeout(16);
+    }
+    return res;
+}
+
 export default example({
     title: 'Custom progress on TS',
     description: 'Fully customized progress bar written on TypeScript',
     async run() {
-        const progress = tqdm(gen(), {
+        const opts: TqdmOptions = {
             total,
             description: 'Custom styling',
             maxColWidth: 100,
@@ -32,14 +39,10 @@ export default example({
             progressBraces: ['[', ']'],
             progressColor: '#f1f0c2',
             unit: ['thing', 'things'],
-        });
-
-        const res: Item[] = [];
-        for (const x of progress) {
-            res.push(x);
-            await timers.setTimeout(16);
-        }
-
+        };
+        const inp: TqdmInput = gen();
+        const tq = tqdm(inp, opts);
+        const res = await iterate(tq);
         console.log('Result length:', res.length);
     },
 });
