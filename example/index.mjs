@@ -13,13 +13,28 @@ async function main() {
         value: null,
     });
 
+    const exampleEntries = Array.from(exampleChoices.entries());
+
+    let lastValue = null;
     while (true) {
+        let defaultSelected = 0;
+        if (lastValue) {
+            for (const [idx, item] of exampleEntries) {
+                if (item?.value === lastValue) {
+                    defaultSelected = idx;
+                    break;
+                }
+            }
+        }
+
         const res = await inquirer.prompt([
             {
                 name: 'func',
                 message: 'Choose an example to run:',
                 type: 'list',
                 choices: exampleChoices,
+                loop: false,
+                default: defaultSelected,
             },
         ], []);
 
@@ -28,6 +43,7 @@ async function main() {
         }
 
         await res.func();
+        lastValue = res.func;
     }
 }
 
