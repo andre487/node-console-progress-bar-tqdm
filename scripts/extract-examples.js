@@ -17,6 +17,7 @@ async function main() {
         if (!fs.existsSync(path.join(projectDir, filePath))) {
             filePath = origFilePath;
         }
+        filePath = filePath.replace('\\', '/');
         const baseName = path.basename(filePath);
 
         const tagString = tags.map((tag) => '`' + tag + '`').join(', ');
