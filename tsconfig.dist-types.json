@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.dist-cjs.json",
+  "compilerOptions": {
+    "outFile": "./dist/types.d.ts",
+    "declaration": true,
+    "emitDeclarationOnly": true
+  }
+}
