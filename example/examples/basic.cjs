@@ -4,21 +4,13 @@ const timers = require('node:timers/promises');
 
 module.exports = example({
     title: 'Basic example',
-    description: 'Iterate over an array with a few options',
+    description: 'Iterate over an array without any options',
+    tags: ['CJS', 'Array', 'defaults'],
     async run() {
         const data = new Array(100).fill(null).map((_, idx) => idx);
 
         const res = [];
-        /**
-         * @type {TqdmOptions}
-         * These options can be omitted, tqdm has good defaults
-         */
-        const opts = {
-            description: 'Basic example',
-            unit: ['number', 'numbers'],
-        };
-
-        for (const x of tqdm(data, opts)) {
+        for (const x of tqdm(data)) {
             res.push(x);
             await timers.setTimeout(16);
         }

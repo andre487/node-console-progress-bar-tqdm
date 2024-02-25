@@ -5,6 +5,7 @@ const timers = require('node:timers/promises');
 module.exports = example({
     title: 'Using progress bar directly',
     description: 'There is no iteration over tqdm iterator, direct TqdmProgress usage. Progress split to 2 parts',
+    tags: ['CJS', 'TqdmProgress', 'flush output', 'resuming', 'color'],
     async run() {
         const total = 100;
 
@@ -20,6 +21,7 @@ module.exports = example({
             prevVal = i;
             await timers.setTimeout(32);
         }
+        // Force render to flush delayed output
         pb1.render(true);
 
         console.log('Showing second part of progress');
@@ -34,6 +36,7 @@ module.exports = example({
             pb2.update();
             await timers.setTimeout(32);
         }
+        // Force render to flush delayed output
         pb2.render(true);
     },
 });

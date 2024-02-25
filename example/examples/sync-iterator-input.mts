@@ -31,6 +31,7 @@ class It implements Iterator<Item>, Iterable<Item> {
 export default example({
     title: 'Iteration over sync iterator',
     description: 'Example with Iterator and Iterable as input',
+    tags: ['TS', 'Iterator', 'Iterable', 'color', 'styling'],
     async run() {
         const opts: TqdmOptions = {
             total: It.total,

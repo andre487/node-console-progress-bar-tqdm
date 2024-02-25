@@ -31,6 +31,7 @@ class It implements AsyncIterator<Item>, AsyncIterable<Item> {
 export default example({
     title: 'Iteration over async iterator',
     description: 'Example with AsyncIterator and AsyncIterable as input',
+    tags: ['TS', 'async', 'for/await', 'AsyncIterator', 'AsyncIterable', 'color', 'styling'],
     async run() {
         const opts: TqdmOptions = {
             total: It.total,

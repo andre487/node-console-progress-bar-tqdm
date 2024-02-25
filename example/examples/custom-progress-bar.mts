@@ -30,6 +30,7 @@ async function iterate(tq: Tqdm<Generator<Item>>): Promise<Item[]> {
 export default example({
     title: 'Custom progress style',
     description: 'Fully customized progress bar written on TypeScript',
+    tags: ['TS', 'Generator', 'units', 'color', 'styling', 'max width'],
     async run() {
         const opts: TqdmOptions = {
             total,
@@ -38,7 +39,7 @@ export default example({
             progressSymbol: '=',
             progressBraces: ['[', ']'],
             progressColor: '#f1f0c2',
-            unit: ['thing', 'things'],
+            unit: 'things',
         };
         const inp: TqdmInput = gen();
         const tq = tqdm(inp, opts);

@@ -1,4 +1,4 @@
-module.exports = function example({title, description, run}) {
+module.exports = function example({title, description, tags, run}) {
     if (!title) {
         throw new Error('`title` is required');
     }
@@ -8,5 +8,6 @@ module.exports = function example({title, description, run}) {
     if (typeof run !== 'function') {
         throw new Error('`func` is required');
     }
-    return {title, description, run};
+    tags = tags || [];
+    return {title, description, tags, run};
 };

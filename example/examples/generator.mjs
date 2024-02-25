@@ -5,6 +5,7 @@ import timers from 'node:timers/promises';
 export default example({
     title: 'Generator examples',
     description: 'A couple of examples where we iterate over generator',
+    tags: ['ESM', 'Generator', 'with/without total'],
     async run() {
         const total = 100;
 
