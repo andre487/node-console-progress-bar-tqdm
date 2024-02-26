@@ -110,7 +110,6 @@ export class Tqdm<TInput extends TqdmInput> implements Iterable<TqdmItem<TInput>
         }
 
         if (res.done) {
-            this.progress.render(true);
             this.progress.close();
         } else {
             this.progress.update();
@@ -128,7 +127,6 @@ export class Tqdm<TInput extends TqdmInput> implements Iterable<TqdmItem<TInput>
         return new Promise((resolve, reject) => {
             pRes.then((res) => {
                 if (res.done) {
-                    this.progress.render(true);
                     this.progress.close();
                 } else {
                     this.progress.update();
@@ -167,6 +165,32 @@ export class TqdmProgress implements ITqdmProgress {
     private itCounter: number = 0;
 
     private readonly num: (x: number) => string;
+
+    public static withProgress<TResult>(
+        fn: (progressBar: TqdmProgress) => TResult,
+        options: TqdmOptions = {},
+    ): TResult {
+        const progressBar = new TqdmProgress(options);
+        try {
+            progressBar.render();
+            return fn(progressBar);
+        } finally {
+            progressBar.close();
+        }
+    }
+
+    public static async withAsyncProgress<TResult>(
+        fn: (progressBar: TqdmProgress) => Promise<TResult>,
+        options: TqdmOptions = {},
+    ): Promise<TResult> {
+        const progressBar = new TqdmProgress(options);
+        try {
+            progressBar.render();
+            return await fn(progressBar);
+        } finally {
+            progressBar.close();
+        }
+    }
 
     constructor(options: TqdmOptions) {
         const fullOptions = {
@@ -232,6 +256,7 @@ export class TqdmProgress implements ITqdmProgress {
     }
 
     close() {
+        this.render(true);
         this.stream.finalize();
     }
 

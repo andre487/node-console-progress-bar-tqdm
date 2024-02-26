@@ -2,7 +2,7 @@ import {beforeEach, describe, expect, test} from '@jest/globals';
 import {EOL} from 'node:os';
 import {Writable} from 'node:stream';
 import * as timers from 'node:timers/promises';
-import {tqdm} from '../../src';
+import {tqdm, TqdmProgress} from '../../src';
 import {getTermReturnToLineStart} from '../../src/term';
 
 const commonOptions = {
@@ -92,6 +92,33 @@ describe('TqdmProgress', () => {
             await sleep();
         }
         checkCountableProgress(stream);
+    });
+
+    test('#withProgress()', () => {
+        const total = 10;
+        const res = TqdmProgress.withProgress((progressBar) => {
+            const data = new Array(total).fill(null).map((_, idx) => idx);
+            for (const _ of data) {
+                progressBar.update();
+            }
+            return data;
+        }, {total, stream, ...commonOptions});
+        checkCountableProgress(stream, false);
+        expect(res).toHaveLength(total);
+    });
+
+    test('#withAsyncProgress()', async () => {
+        const total = 10;
+        const res = await TqdmProgress.withAsyncProgress(async (progressBar) => {
+            const data = new Array(total).fill(null).map((_, idx) => idx);
+            for (const _ of data) {
+                progressBar.update();
+                await sleep();
+            }
+            return data;
+        }, {total, stream, ...commonOptions});
+        checkCountableProgress(stream);
+        expect(res).toHaveLength(total);
     });
 
     test('Array with custom progress bar', async () => {
@@ -265,7 +292,7 @@ class TestStream extends Writable {
     }
 }
 
-function checkCountableProgress(stream: TestStream) {
+function checkCountableProgress(stream: TestStream, checkTimers = true) {
     let hasTimers = false;
 
     expect(stream.data).toHaveLength(25);
@@ -278,6 +305,10 @@ function checkCountableProgress(stream: TestStream) {
         if (/.+\[\d{2}:\d{2}.\d{3}<\d{2}:\d{2}.\d{3}, \d+.\d{3}s\/it]/.test(line)) {
             hasTimers = true;
         }
+    }
+
+    if (!checkTimers) {
+        return;
     }
 
     if (!hasTimers) {
