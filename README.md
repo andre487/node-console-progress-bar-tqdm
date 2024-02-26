@@ -14,6 +14,14 @@ Language support: TypeScript and JavaScript with CommonJS and EcmaScript modules
 Input data support: `Array`, `Number`, `Generator`, `AsyncGenerator`, `Iterable`, `Iterator`, `AsyncIterable`, `AsyncIterator`.
 When `Number` is passed as an input, there will be iterations over a range from 0 to this number.
 
+## Table of contents
+
+  * [How does it look?](#how-does-it-look-)
+  * [Quick examples](#quick-examples)
+  * [Installation](#installation)
+  * [Examples](#examples)
+
+
 ## How does it look?
 
 ```
