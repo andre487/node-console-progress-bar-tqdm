@@ -12,10 +12,13 @@ This library implements very similar interface and options set.
 Language support: TypeScript and JavaScript with CommonJS and EcmaScript modules.
 
 Input data support: `Array`, `Number`, `Generator`, `AsyncGenerator`, `Iterable`, `Iterator`, `AsyncIterable`, `AsyncIterator`.
+When `Number` is passed as an input, there will be iterations over a range from 0 to this number.
 
 ## How does it look?
 
-**TODO**
+<video src="assets/progress-bar.mp4" width="100%" autoplay loop muted>
+    <img src="assets/progress-bar.png" width="100%" alt="Progress bar" />
+</video>
 
 ## Quick examples
 
