@@ -22,7 +22,7 @@ class It {
 export default example({
     title: 'Iteration over async iterator',
     description: 'Example with AsyncIterator and AsyncIterable as input',
-    tags: ['TS', 'async', 'for/await', 'AsyncIterator', 'AsyncIterable', 'color', 'styling'],
+    tags: ['TS', 'async', 'for/await', 'AsyncIterable', 'color', 'styling'],
     file: import.meta.url,
     async run() {
         const opts = {

@@ -170,7 +170,7 @@ describe('TqdmProgress', () => {
         }
     });
 
-    test('Array with unit scaling', async () => {
+    test('Number with unit scaling', async () => {
         const t = tqdm(1_000, {
             stream,
             unitScale: true,
@@ -192,6 +192,34 @@ describe('TqdmProgress', () => {
         }
         expect(cleanData[1001]).toMatch(/^\s+\d+%\s*\|=*\s*\|\s+\d+\.\d+k\/[\d.]+k/);
     }, 30_000);
+
+    test('Number with countdown', async () => {
+        const t = tqdm(25, {
+            initial: 25,
+            step: -1,
+            stream,
+            progressSymbol: '=',
+            ...commonOptions,
+        });
+
+        const res: number[] = [];
+        for (const x of t) {
+            await sleep(0);
+            res.push(x);
+        }
+
+        expect(stream.data).toHaveLength(55);
+        const cleanData = getCleanData(stream);
+        expect(cleanData).toHaveLength(28);
+
+        expect(cleanData[0]).toBe(' 100% |=================================================================| 25/25 ');
+        for (const line of cleanData.slice(0, 26)) {
+            expect(line).toMatch(/^\s+\d+%\s*\|=*\s*\|\s+\d+\/[\d.]/);
+        }
+        expect(cleanData[26]).toMatch(/\s+0%\s+\|\s+\|\s+0\/25\s+\[00:00.\d{3}<00:00\.000,\s+0\.001s\/it]\s+/);
+
+        expect(res).toEqual(new Array(25).fill(null).map((_, idx) => idx));
+    });
 
     test('Array with maxColWidth', async () => {
         const input = new Array(10).fill(null).map((_, idx) => idx);

@@ -53,6 +53,10 @@ export type TqdmOptions = {
     // If `input` is number, this number will be used.
     total?: number;
 
+    // Step of the progress.
+    // Default: 1.
+    step?: number;
+
     // Value that will be used to define the unit of each iteration.
     // It can be a string: "thing", a tuple: ["one thing", "many things"]
     // or a table:

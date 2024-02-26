@@ -54,6 +54,7 @@ const defaultOptions: Required<TqdmOptions> = {
     unitScale: false,
     initial: 0,
     total: -1,
+    step: 1,
     stream: process.stderr,
     minInterval: 50,
     forceTerminal: false,
@@ -152,6 +153,8 @@ export class TqdmProgress implements ITqdmProgress {
 
     private readonly total: number;
     private readonly totalDigits: number = 0;
+    private readonly initial: number;
+    private readonly step: number;
     private readonly unitScale: boolean;
     private readonly unitDelimiter: string = '';
     private readonly totalScaled: string = '';
@@ -160,7 +163,8 @@ export class TqdmProgress implements ITqdmProgress {
     private readonly startTime: number = Date.now();
     private lastRenderTime: number = 0;
     private timeSpent: number = 0;
-    private counter: number;
+    private position: number;
+    private itCounter: number = 0;
 
     private readonly num: (x: number) => string;
 
@@ -186,12 +190,13 @@ export class TqdmProgress implements ITqdmProgress {
             }
         }
 
-        this.counter = fullOptions.initial;
+        this.initial = this.position = fullOptions.initial;
         this.total = fullOptions.total;
         this.haveCorrectTotal = isFinite(this.total) && !isNaN(this.total) && this.total > 0;
         if (this.haveCorrectTotal) {
             this.totalDigits = Math.trunc(Math.log10(this.total)) + 1;
         }
+        this.step = fullOptions.step;
 
         this.unitScale = fullOptions.unitScale;
         if (fullOptions.unitScale) {
@@ -205,8 +210,9 @@ export class TqdmProgress implements ITqdmProgress {
         }
     }
 
-    update(by: number = 1) {
-        this.counter += by;
+    update(by: number = this.step) {
+        this.position += by;
+        ++this.itCounter;
         this.timeSpent = Date.now() - this.startTime;
         this.render();
     }
@@ -237,18 +243,18 @@ export class TqdmProgress implements ITqdmProgress {
         return x.toString();
     }
 
-    private doesCounterFitTotal() {
-        return this.haveCorrectTotal && this.counter <= this.total;
+    private doesPositionFitTotal() {
+        return this.haveCorrectTotal && this.position <= this.total;
     }
 
     private generateLeft() {
         let countStr;
-        if (this.doesCounterFitTotal()) {
-            const percent = Math.round(Math.min(this.counter, this.total) * 100 / this.total);
+        if (this.doesPositionFitTotal()) {
+            const percent = Math.round(Math.min(this.position, this.total) * 100 / this.total);
             countStr = percent == -1 ? '' : `${String(percent).padStart(3, ' ')}% `;
         } else {
-            const unitKey = pluralService.select(this.counter);
-            countStr = `${this.num(this.counter)}${this.unitDelimiter}${this.unit[unitKey]}`;
+            const unitKey = pluralService.select(this.position);
+            countStr = `${this.num(this.position)}${this.unitDelimiter}${this.unit[unitKey]}`;
         }
 
         const descStr = this.description ? `${this.description}: ` : '';
@@ -257,23 +263,25 @@ export class TqdmProgress implements ITqdmProgress {
 
     private generateRight() {
         const res: string[] = [''];
-        if (this.doesCounterFitTotal()) {
+        if (this.doesPositionFitTotal()) {
             if (this.unitScale) {
-                res.push(`${this.num(this.counter)}/${this.totalScaled}`);
+                res.push(`${this.num(this.position)}/${this.totalScaled}`);
             } else {
-                const countStr = String(this.counter).padStart(this.totalDigits, ' ');
+                const countStr = String(this.position).padStart(this.totalDigits, ' ');
                 res.push(`${countStr}/${this.total}`);
             }
         }
 
         if (this.timeSpent) {
-            const timePerIt = this.timeSpent / this.counter;
+            const timePerIt = this.timeSpent / this.itCounter;
             const timePerItStr = (timePerIt / 1000).toFixed(3);
 
             const timeSpentStr = formatTimeDelta(this.timeSpent, true);
             let elapsedTime = '';
-            if (this.doesCounterFitTotal()) {
-                const elapsedItems = Math.max(0, this.total - this.counter);
+            if (this.doesPositionFitTotal()) {
+                const elapsedItems = this.step > 0 ?
+                    Math.max(0, this.total - this.position) :
+                    Math.max(0, this.total - (this.initial - this.position));
                 elapsedTime = '<' + formatTimeDelta(timePerIt * elapsedItems, true);
             }
 
@@ -288,7 +296,7 @@ export class TqdmProgress implements ITqdmProgress {
     }
 
     private generateProgressBar(reduceBy: number): string {
-        if (!this.doesCounterFitTotal()) {
+        if (!this.doesPositionFitTotal()) {
             return '';
         }
 
@@ -300,7 +308,7 @@ export class TqdmProgress implements ITqdmProgress {
             return '';
         }
 
-        const cnt = Math.trunc(columns * Math.min(this.counter, this.total) / this.total);
+        const cnt = Math.trunc(columns * Math.min(this.position, this.total) / this.total);
         return [
             this.progressLeftBrace,
             this.progressColor,
