@@ -60,7 +60,7 @@ const defaultOptions: Required<TqdmOptions> = {
     forceTerminal: false,
 };
 
-export function tqdm<T extends TqdmInput>(input: T, opts: TqdmOptions = {}): Tqdm<T> {
+export function tqdm<TInput extends TqdmInput>(input: TInput, opts: TqdmOptions = {}): Tqdm<TInput> {
     return new Tqdm(input, opts);
 }
 
@@ -71,24 +71,24 @@ export class Tqdm<TInput extends TqdmInput> implements Iterable<TqdmItem<TInput>
     private readonly iterator: TqdmInnerIterator<TqdmItem<TInput>>;
     private readonly progress: ITqdmProgress;
 
-    constructor(private readonly _input: TInput, options: TqdmOptions = {}) {
-        if (typeof this._input == 'number') {
-            this.iterator = new TqdmNumericIterator(this._input) as TqdmInnerIterator<TqdmItem<TInput>>;
-        } else if (isIterable(this._input)) {
-            this.iterator = this._input[Symbol.iterator]() as TqdmInnerIterator<TqdmItem<TInput>>;
-        } else if (isAsyncIterable(this._input)) {
-            this.iterator = this._input[Symbol.asyncIterator]() as TqdmInnerIterator<TqdmItem<TInput>>;
-        } else if (isIterator(this._input)) {
-            this.iterator = this._input as TqdmInnerIterator<TqdmItem<TInput>>;
+    constructor(private readonly input: TInput, options: TqdmOptions = {}) {
+        if (typeof this.input == 'number') {
+            this.iterator = new TqdmNumericIterator(this.input) as TqdmInnerIterator<TqdmItem<TInput>>;
+        } else if (isIterable(this.input)) {
+            this.iterator = this.input[Symbol.iterator]() as TqdmInnerIterator<TqdmItem<TInput>>;
+        } else if (isAsyncIterable(this.input)) {
+            this.iterator = this.input[Symbol.asyncIterator]() as TqdmInnerIterator<TqdmItem<TInput>>;
+        } else if (isIterator(this.input)) {
+            this.iterator = this.input as TqdmInnerIterator<TqdmItem<TInput>>;
         } else {
             throw new Error('Unknown TQDM input type');
         }
 
         if (options.total === undefined || options.total < 0) {
-            if (hasLength(this._input)) {
-                options.total = this._input.length;
-            } else if (typeof this._input == 'number') {
-                options.total = this._input;
+            if (hasLength(this.input)) {
+                options.total = this.input.length;
+            } else if (typeof this.input == 'number') {
+                options.total = this.input;
             }
         }
         this.progress = new TqdmProgress(options);
