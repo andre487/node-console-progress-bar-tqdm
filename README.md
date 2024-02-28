@@ -30,9 +30,11 @@ Tested on Linux, macOS and Windows.
   50% |████████████████████████████████████████████████                                                 |  50/100 [00:01.630<00:01.630, 0.033s/it]
 ```
 
-<video src="assets/progress-bar.mp4" width="100%" autoplay loop muted>
-    <img src="assets/progress-bar.png" width="100%" alt="Progress bar" />
-</video>
+
+
+https://github.com/andre487/node-console-progress-bar-tqdm/assets/1009104/afac1fe2-da92-433f-8791-4754f736feab
+
+
 
 ## Quick reference
 
