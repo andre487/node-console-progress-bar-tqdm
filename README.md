@@ -14,6 +14,8 @@ Language support: TypeScript and JavaScript with CommonJS and EcmaScript modules
 Input data support: `Array`, `Number`, `Generator`, `AsyncGenerator`, `Iterable`, `Iterator`, `AsyncIterable`, `AsyncIterator`.
 When `Number` is passed as an input, there will be iterations over a range from 0 to this number.
 
+Tested on Linux, macOS and Windows.
+
 ## Table of contents
 
   * [How does it look?](#how-does-it-look)
@@ -34,7 +36,10 @@ When `Number` is passed as an input, there will be iterations over a range from 
 
 ## Quick reference
 
+This is a quick API reference. It's useful to look to some examples that are below.
+
 ```ts
+// When using custom unit names, different forms of unir name could be passed.
 export type TqdmUnitTable = Record<Intl.LDMLPluralRule, string>;
 export type TqdmUnitOption = string | [string, string] | TqdmUnitTable;
 
@@ -110,14 +115,18 @@ export type TqdmOptions = {
     forceTerminal?: boolean;
 };
 
+// Input type of the library main method.
+// It means that Array, Generator and AsyncGenerator can be used as well as these generic types.
 export type TqdmInput = Iterable<unknown> |
     Iterator<unknown> |
     AsyncIterable<unknown> |
     AsyncIterator<unknown> |
     number;
 
+// The main method that generated progress bar with an original data iterator.
 export declare function tqdm<TInput extends TqdmInput>(input: TInput, opts?: TqdmOptions): Tqdm<TInput>;
 
+// The main class thar implements the iterator over rhe original data and progress bar rendering.
 export declare class Tqdm<TInput extends TqdmInput> implements Iterable<TqdmItem<TInput>>, AsyncIterable<TqdmItem<TInput>>, ITqdmSyncIteratorContainer<TqdmItem<TInput>>, ITqdmAsyncIteratorContainer<TqdmItem<TInput>> {
     constructor(input: TInput, options?: TqdmOptions);
     [Symbol.iterator](): TqdmSyncResultIteratorReturn<TInput>;
@@ -126,6 +135,8 @@ export declare class Tqdm<TInput extends TqdmInput> implements Iterable<TqdmItem
     nextAsync(): TqdmIteratorResultAsync<TInput>;
 }
 
+// Progress bar class.
+// Can be used when there is no need for iterator over originall data.
 export declare class TqdmProgress implements ITqdmProgress {
     constructor(options: TqdmOptions);
     update(by?: number): void;
