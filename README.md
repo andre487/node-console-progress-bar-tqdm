@@ -4,6 +4,10 @@
 node-console-progress-bar-tqdm
 ```
 
+[![Test commit](https://github.com/andre487/node-console-progress-bar-tqdm/actions/workflows/test-commit.yml/badge.svg)](https://github.com/andre487/node-console-progress-bar-tqdm/actions/workflows/test-commit.yml)
+[![Downloads](https://img.shields.io/npm/dm/node-console-progress-bar-tqdm.svg?style=flat-square)](https://www.npmjs.com/package/node-console-progress-bar-tqdm)
+[![NPM Version](https://img.shields.io/npm/v/node-console-progress-bar-tqdm.svg?style=flat-square)](https://www.npmjs.com/package/node-console-progress-bar-tqdm)
+
 This is a library that implements progress bar in console for Node.js in the style of
 [tqdm](https://tqdm.github.io/) Python library.
 
