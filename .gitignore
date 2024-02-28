@@ -86,10 +86,10 @@ web_modules/
 # Next.js build output
 .next
 out
+dist
 
 # Nuxt.js build / generate output
 .nuxt
-dist
 
 # Gatsby files
 .cache/
@@ -128,3 +128,7 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# IntelliJ
+.idea
+*.iml
