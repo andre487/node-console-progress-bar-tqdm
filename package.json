@@ -1,6 +1,6 @@
 {
   "name": "node-console-progress-bar-tqdm",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "engines": {
     "node": ">= 16"
   },
@@ -33,7 +33,14 @@
   "keywords": [
     "nodejs",
     "cli",
-    "progress-bar",
+    "progress bar",
+    "progress",
+    "indicator",
+    "iterate",
+    "iterator",
+    "for",
+    "for await",
+    "loop",
     "cli-app",
     "nodejs-cli",
     "tqdm",
