@@ -19,10 +19,11 @@ async function main() {
         }
         filePath = filePath.replace(/\\/g, '/');
         const baseName = path.basename(filePath);
+        const fullUrl = `https://github.com/andre487/node-console-progress-bar-tqdm/blob/main/${filePath}`;
 
         const tagString = tags.map((tag) => '`' + tag + '`').join(', ');
         console.log(
-            `| [${baseName}](${filePath})`,
+            `| [${baseName}](${fullUrl})`,
             `| ${title}`,
             `| ${description}`,
             `| ${tagString}`,
