@@ -18,6 +18,8 @@ When `Number` is passed as an input, there will be iterations over a range from 
 
 Tested on Linux, macOS and Windows.
 
+Node.js 16+ is required.
+
 ## Table of contents
 
   * [How does it look?](#how-does-it-look)
