@@ -36,7 +36,12 @@
     "progress-bar",
     "cli-app",
     "nodejs-cli",
-    "tqdm"
+    "tqdm",
+    "typescript",
+    "ts",
+    "pure-js",
+    "commonjs",
+    "esmodules"
   ],
   "description": "Progress bar in console for Node.js in the style of TQDM Python library",
   "author": "andre487 <andrey.prokopyuk@gmail.com>",
