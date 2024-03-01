@@ -1,6 +1,6 @@
 {
   "name": "node-console-progress-bar-tqdm",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "engines": {
     "node": ">= 16"
   },
@@ -30,9 +30,19 @@
     "readme:generate-examples": "node scripts/extract-examples.js",
     "prepare": "husky"
   },
+  "homepage": "https://github.com/andre487/node-console-progress-bar-tqdm#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andre487/node-console-progress-bar-tqdm"
+  },
   "keywords": [
+    "tqdm",
     "nodejs",
     "cli",
+    "nodejs-cli",
+    "cli-app",
+    "terminal",
+    "console",
     "progress bar",
     "progress",
     "indicator",
@@ -41,9 +51,6 @@
     "for",
     "for await",
     "loop",
-    "cli-app",
-    "nodejs-cli",
-    "tqdm",
     "typescript",
     "ts",
     "pure-js",
@@ -51,8 +58,10 @@
     "esmodules"
   ],
   "description": "Progress bar in console for Node.js in the style of TQDM Python library",
-  "author": "andre487 <andrey.prokopyuk@gmail.com>",
+  "author": "andre487 <andrey.prokopyuk@gmail.com> (https://andre.life)",
+  "man": "./README.md",
   "license": "MIT",
+  "bugs": "https://github.com/andre487/node-console-progress-bar-tqdm/issues",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "7.0.2",
     "@typescript-eslint/parser": "7.0.2",
