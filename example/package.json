@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "colors": "1.4.0",
-    "inquirer": "9.2.14",
+    "inquirer": "9.3.8",
     "node-console-progress-bar-tqdm": "file:.."
   },
   "devDependencies": {
