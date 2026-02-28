@@ -63,7 +63,7 @@
   "license": "MIT",
   "bugs": "https://github.com/andre487/node-console-progress-bar-tqdm/issues",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "7.0.2",
+    "@typescript-eslint/eslint-plugin": "7.18.0",
     "@typescript-eslint/parser": "7.0.2",
     "colors": "1.4.0",
     "eslint": "8.56.0",
@@ -74,6 +74,6 @@
     "ts-node": "10.9.2",
     "tsc-alias": "1.8.8",
     "typescript": "5.3.3",
-    "typescript-eslint": "7.0.2"
+    "typescript-eslint": "7.18.0"
   }
 }
